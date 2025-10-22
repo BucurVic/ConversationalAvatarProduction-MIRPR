@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Demo app AI educațional – funcționalități de bază</title>
+  <style>
+    :root { --bg:#0b0c10; --card:#111318; --text:#e8e8e8; --muted:#a9b0b8; --accent:#6ee7b7; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Helvetica Neue", sans-serif; background:var(--bg); color:var(--text); line-height:1.5; }
+    .wrap { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+    header h1 { font-size: 1.8rem; margin: 0 0 8px; }
+    header p { color: var(--muted); margin: 0 0 24px; }
+    section { background: var(--card); border: 1px solid #23262d; border-radius: 16px; padding: 20px; margin: 16px 0 24px; box-shadow: 0 6px 24px rgba(0,0,0,0.25); }
+    h2 { font-size: 1.25rem; margin: 0 0 12px; }
+    .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:16px; }
+    .card { background:#0e1015; border:1px solid #23262d; border-radius:12px; padding:14px; }
+    ul { margin: 8px 0 0 1.1rem; }
+    li { margin: 6px 0; }
+    label { display:block; font-weight:600; margin-bottom:8px; }
+    textarea { width:100%; min-height:110px; resize:vertical; border-radius:12px; border:1px solid #2a2f37; background:#0b0e14; color:var(--text); padding:12px; font: inherit; }
+    .hint { color: var(--muted); font-size: .9rem; }
+    .answer { border-left: 3px solid var(--accent); padding-left: 10px; display:none; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Demo Face2Learn</h1>
+      <p>App simplă care va integra AI-ul. Pentru moment, „predicția făcută de AI” este <strong>hard‑codată</strong> și va fi înlocuită ulterior cu cel mai bun model obținut.</p>
+    </header>
+
+    <section id="functionalitati">
+      <h2>Funcționalități de bază</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Date de intrare</h3>
+          <ul>
+            <li>întrebări formulate în limbaj natural (text sau voce);</li>
+            <li>documente educaționale (manuale, cursuri, notițe);</li>
+            <li>preferințe ale utilizatorului (limbă, voce, tonalitate).</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Date de ieșire</h3>
+          <ul>
+            <li>răspuns text generat de LLM;</li>
+            <li>voce sintetică naturală (TTS);</li>
+            <li>videoclip animat cu avatar sincronizat cu vorbirea.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="demo">
+        <h2>Demo</h2>
+        <p class="hint">Scrie mai jos o întrebare (nu contează conținutul ei acum).<br><br> Apasă <strong>Enter</strong> pentru a vedea răspunsul hard‑codat.</p>
+        <label for="q">Întrebarea ta:</label>
+        <textarea id="q" name="q" placeholder="Intrebare..."></textarea>
+
+        <div class="card" style="margin-top:14px;">
+            <strong>Răspuns AI (hard‑codat):</strong>
+            <p id="a" class="answer">
+            „Pentru această întrebare, varianta demo întoarce un răspuns placeholder. În versiunea finală, aici va apărea
+            explicația generată de modelul selectat, împreună cu opțiuni pentru TTS și avatar animat.”
+            </p>
+        </div>
+    </section>
+  </div>
+
+  <script>
+    const textarea = document.getElementById('q');
+    const answer = document.getElementById('a');
+
+    textarea.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    answer.style.display = 'block';
+    }
+    });
+  </script>
+</body>
+</html>
