@@ -2,9 +2,12 @@ import fitz
 import re
 from tqdm import tqdm
 from langchain_core.documents import Document as LangchainDocument
+from unidecode import unidecode
 
 def eliminate_enter(text: str):
-    return text.replace('\n', ' ').replace('  ', ' ')
+    text = text.replace('\n', ' ').replace('  ', ' ')
+    text_normalized = unidecode(text)
+    return text_normalized
 
 def load_pdf_to_documents(pdf_path: str):
     pdf = fitz.open(pdf_path)
