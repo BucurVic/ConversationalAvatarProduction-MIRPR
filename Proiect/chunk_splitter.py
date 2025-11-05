@@ -7,16 +7,19 @@ from transformers import AutoTokenizer
 import pandas as pd
 from langchain_core.documents import Document as LangchainDocument
 
+
 EMBEDDING_MODEL_NAME = "thenlper/gte-small"
 
 def chunk_function(
     chunk_size: int,
     knowledge_base: list[LangchainDocument],
 ) -> list[LangchainDocument]:
+    
+   
     MARKDOWN_SEPARATORS = [
         r"\n{2,}",              # paragrafe separate
-        r"\bDefini(ţ|t)ia\b",   # definirea termenilor
-        r"\bTeorema\b",         # teoreme
+        r"\bDefinitia\b",       # FĂRĂ diacritice
+        r"\bTeorema\b",         # Acesta era deja ok
         r"[0-9]+\.[0-9]+",      # subsectiuni numerotate
         r"\n",                  # linii noi
         r" "                    # fallback
@@ -31,8 +34,10 @@ def chunk_function(
     )
 
     docs_processed = []
+    
     for doc in knowledge_base:
         docs_processed += text_splitter.split_documents([doc])
+
 
     unique_texts = {}
     docs_processed_unique = []
@@ -43,7 +48,8 @@ def chunk_function(
 
     return docs_processed_unique
 
-docs_processed = chunk_function(256, load_data())
+
+docs_processed = chunk_function(256, load_data()) 
 
 tokenizer = AutoTokenizer.from_pretrained(EMBEDDING_MODEL_NAME)
 lengths = [len(tokenizer.encode(doc.page_content)) for doc in tqdm(docs_processed)]
@@ -51,4 +57,8 @@ fig = pd.Series(lengths).hist()
 plt.title("Distribution of document lengths in the knowledge base (in count of tokens)")
 plt.xlabel("Tokens per chunk")
 plt.ylabel("Number of chunks")
-plt.show()
+
+plt.savefig("chunk_distribution.png") 
+print("Graficul distribuției chunk-urilor a fost salvat ca chunk_distribution.png")
+
+# plt.show() 
