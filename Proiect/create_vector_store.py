@@ -15,14 +15,14 @@ def create_vector_store():
     knowledge_base = load_data()
     
     print("Pasul 2: Împărțirea documentelor în 'chunks'...")
-    # Folosim chunk_size=256, așa cum ai definit în chunk_splitter.py
+    # Folosim chunk_size=256
     docs_processed = chunk_function(256, knowledge_base)
     
     print(f"S-au procesat {len(docs_processed)} 'chunks' de documente.")
 
     print(f"Pasul 3: Inițializarea modelului de embedding: {EMBEDDING_MODEL_NAME}...")
     # Inițializează modelul de embedding-uri
-    # 'model_kwargs' ne asigură că rulează pe CPU.
+   
     embeddings = HuggingFaceEmbeddings(
         model_name=EMBEDDING_MODEL_NAME,
         model_kwargs={'device': 'cpu'}
