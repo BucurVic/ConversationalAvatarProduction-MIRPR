@@ -2,15 +2,14 @@ import time
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from openai import OpenAI
-from unidecode import unidecode # <-- Adăugat pentru normalizare
+from unidecode import unidecode
 
 # --- Configurare ---
 DB_FAISS_PATH = 'vectorstore/'
 EMBEDDING_MODEL_NAME = "thenlper/gte-small"
 LM_STUDIO_URL = "http://localhost:1234/v1"
 
-# !!! IMPORTANT: Numele modelului tău v0.3 !!!
-# Am pus numele pe care l-ai menționat. Verifică dacă e exact așa.
+
 LLM_MODEL = "mistral-7b-instruct-v0.3.Q4_K_M.gguf"
 
 def load_db():
@@ -22,7 +21,7 @@ def load_db():
     )
     
     print(f"Încărcarea bazei de date vectoriale din '{DB_FAISS_PATH}'...")
-    # S-a adăugat 'allow_dangerous_deserialization=True'
+    
     db = FAISS.load_local(
         DB_FAISS_PATH, 
         embeddings, 
@@ -34,10 +33,9 @@ def load_db():
 def create_prompt(context_docs, query):
     """Creează promptul final pentru LLM."""
     
-    # Extragem conținutul paginilor (care este deja curățat, fără diacritice)
     context = "\n\n---\n\n".join([doc.page_content for doc in context_docs])
     
-    # Șablonul de prompt
+    
     prompt_template = f"""
 Ești un asistent AI specializat în cursul de geometrie. 
 Răspunde la următoarea întrebare bazându-te **exclusiv** pe contextul oferit mai jos. 
@@ -61,7 +59,7 @@ def get_llm_response(prompt):
     """Trimite promptul către LM Studio și preia răspunsul."""
     print("\n[INFO] Conectare la LM Studio...")
     
-    client = OpenAI(base_url=LM_STUDIO_URL, api_key="lm-studio") # api_key nu este validat
+    client = OpenAI(base_url=LM_STUDIO_URL, api_key="lm-studio") 
 
     try:
         start_time = time.time()
@@ -90,22 +88,17 @@ if __name__ == "__main__":
     # 1. Încarcă baza de date
     db = load_db()
     
-    # 2. Definește întrebarea (cu diacritice, e OK)
-    query_original = "Ce este un spațiu vectorial?"
+    query_original = "Care este teorema lui pitagora?"
     
-    # 3. Normalizează întrebarea pentru căutare (MODIFICARE)
     query_normalized = unidecode(query_original)
     
     print(f"\nÎntrebare originală: '{query_original}'")
     print(f"Întrebare normalizată (pt. căutare): '{query_normalized}'")
 
-    # 4. Retrieval (Regăsire) - folosim întrebarea normalizată
     context_docs = db.similarity_search(query_normalized, k=4)
     
-    # 5. Prompting (Creare Prompt) - folosim întrebarea originală
     prompt = create_prompt(context_docs, query_original)
     
-    # 6. Generation (Generare)
     response = get_llm_response(prompt)
     
     if response:

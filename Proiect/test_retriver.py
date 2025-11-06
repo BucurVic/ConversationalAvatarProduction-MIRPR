@@ -1,6 +1,6 @@
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
-from unidecode import unidecode # <--- ADAUGĂ ASTA
+from unidecode import unidecode 
 
 DB_FAISS_PATH = 'vectorstore/'
 EMBEDDING_MODEL_NAME = "thenlper/gte-small"
@@ -42,7 +42,7 @@ def test_retrieval():
     print("\n--- REZULTATE GĂSITE (CONTEXT) ---")
     for i, doc in enumerate(results):
         print(f"\n--- Rezultatul #{i+1} (Sursa: {doc.metadata.get('source', 'CAPITOL N/A')}) ---")
-        # Acum și textul din 'doc' ar trebui să fie curat, fără diacritice stricate
+        
         print(doc.page_content)
         print("---------------------------------" + "-" * len(str(i+1)))
 
