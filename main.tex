@@ -150,6 +150,133 @@ Algoritmi: talking-face generation dintr-o singură imagine. \\
 Performanță: expresii faciale naturale. \\
 Tehnologii: PyTorch, DeepFace, GitHub.
 
+\chapter{Evaluarea sistemului RAG utilizat în Face2Learn}
+
+\section{Descrierea și explorarea datelor (EDA)}
+Pentru evaluarea componentei de \textbf{întrebare-răspuns} din sistemul Face2Learn, a fost creat manual un set de date format din \textbf{50 de perechi întrebare–răspuns}. Fiecare întrebare a fost extrasă din conținutul manualului \texttt{manual2022.pdf}, iar răspunsul aferent reprezintă transcrierea exactă a fragmentului relevant.
+
+\textbf{Structura fișierului de date (\texttt{evaluare.json}):}
+\begin{verbatim}
+[
+  {
+    "intrebare": "Ce reprezintă un segment orientat?",
+    "raspuns_asteptat": "un segment ... unde s-a precizat originea si extremitatea"
+  },
+  ...
+]
+\end{verbatim}
+
+\textbf{Preprocesare:}
+\begin{itemize}
+  \item Eliminarea diacriticelor pentru uniformitate.
+  \item Conversia la litere mici și eliminarea spațiilor multiple.
+  \item Nu s-a aplicat tokenizare, deoarece evaluarea folosește similaritate semantică și ROUGE.
+\end{itemize}
+
+\textbf{Explorare sumară:}
+\begin{itemize}
+  \item Număr total de exemple: 100;
+  \item Lungime medie întrebare: 9 cuvinte;
+  \item Lungime medie răspuns: 12 cuvinte;
+  \item Domeniu: concepte geometrice (vectori, segmente, egalitate etc.);
+  \item Tip date: text scurt, conceptual – ideal pentru evaluarea unui sistem RAG.
+\end{itemize}
+
+\section{Descrierea algoritmului inteligent}
+\textbf{Algoritm ales:} \textit{Retrieval-Augmented Generation (RAG)}.
+
+\textbf{Motivație:}  
+Arhitectura RAG combină avantajele modelelor de căutare contextuală (retrieval) cu cele de generare (generation), permițând sistemului să răspundă coerent pe baza unui context relevant extras dintr-o bază de cunoștințe (PDF-ul cursului).  
+Această abordare elimină necesitatea antrenării unui model mare de la zero, reducând costurile și riscul de halucinații.
+
+\textbf{Componente principale:}
+\begin{itemize}
+  \item \textbf{Retrieval:}  
+  Model de embedding \texttt{thenlper/gte-small} (din \texttt{sentence-transformers}) și indexare cu \texttt{faiss-cpu}.  
+  Scopul este transformarea fragmentelor PDF în vectori semantici și extragerea celor mai relevante pasaje.
+  \item \textbf{Generation:}  
+  Modelul \texttt{mistral-7b-instruct-v0.3.Q4\_K\_M.gguf}, rulat local prin LM Studio.  
+  Acesta generează răspunsul final folosind contextul returnat de retriever.
+\end{itemize}
+
+\textbf{Librării utilizate:} \texttt{langchain}, \texttt{sentence-transformers}, \texttt{faiss-cpu}, \texttt{numpy}, \texttt{transformers}, \texttt{sklearn.metrics}.
+
+\section{Metodologia experimentală}
+\textbf{Împărțirea datelor:}  
+Setul de 50 de exemple a fost folosit în întregime ca \textbf{set de test}.  
+Scopul principal a fost evaluarea sistemului complet (RAG + LLM), nu antrenarea unui model nou.
+
+\textbf{Hiperparametri utilizați:}
+
+\begin{center}
+\begin{tabular}{|l|c|p{6cm}|}
+\hline
+\textbf{Parametru} & \textbf{Valoare} & \textbf{Descriere} \\
+\hline
+chunk\_size & 256 & Lungimea unui fragment de text la indexare \\
+\hline
+chunk\_overlap & 25 & Suprapunerea dintre fragmente consecutive \\
+\hline
+k & 4 & Numărul de pasaje returnate de retriever \\
+\hline
+temperature & 0.3 & Controlul creativității LLM-ului \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Metrici de evaluare:}
+\begin{itemize}
+  \item \textbf{ROUGE-L (F1):} măsoară suprapunerea exactă între răspunsul generat și cel așteptat;
+  \item \textbf{Similaritate Semantică (Cosine Similarity):} măsoară apropierea conceptuală dintre răspunsuri, folosind embedding-urile \texttt{gte-small}.
+\end{itemize}
+
+\section{Rezultate obținute}
+
+\begin{center}
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Metrică} & \textbf{Valoare medie} \\
+\hline
+ROUGE-L (F1) & 20.61\% \\
+\hline
+Similaritate Semantică & 90.24\% \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Interpretare:}
+\begin{itemize}
+  \item Scorul semantic ridicat (≈90\%) indică faptul că sistemul a înțeles corect întrebările și a generat răspunsuri cu același sens;
+  \item Scorul ROUGE redus (≈20\%) arată că modelul preferă să reformuleze textul în loc să reproducă exact pasajul original.
+\end{itemize}
+
+\textbf{Exemple reprezentative:}
+
+\begin{center}
+\begin{tabular}{|c|p{3.5cm}|p{4cm}|p{4cm}|p{3cm}|}
+\hline
+\textbf{Caz} & \textbf{Întrebare} & \textbf{Răspuns așteptat} & \textbf{Răspuns generat} & \textbf{Observație} \\
+\hline
+1 & Segment orientat & un segment ... cu origine și extremitate & o porțiune ... cu direcție asignată & sens corect, formulare diferită \\
+\hline
+2 & Egalitate segmente & A=C și B=D & A=D și B=C & halucinație (ordine inversată) \\
+\hline
+3 & Vector liber & o clasă de echivalență & o familie de vectori legați & parafrazare semantică \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Analiza finală}
+Diferența semnificativă dintre scorurile ROUGE și Similaritate Semantică evidențiază o problemă frecventă în sistemele RAG:
+\begin{itemize}
+  \item Modelul LLM \textbf{înțelege contextul}, dar nu respectă instrucțiunea „răspunde exclusiv pe baza textului oferit”;
+  \item Răspunsurile sunt logic corecte, dar lexical diferite;
+  \item În unele cazuri apar \textbf{halucinații minore} (exemplul \#2).
+\end{itemize}
+
+\textbf{Concluzie parțială:}
+Rezultatele arată că sistemul RAG implementat are o \textbf{performanță semantică excelentă}, dar necesită îmbunătățiri și aplicarea unei penalizări de diversitate în prompt.
+
 \chapter*{Concluzii}
 Proiectul „Face2Learn” oferă o abordare inovatoare de integrare a AI multimodal (text, voce, video) în domeniul educației. Combinația între LLM-uri optimizate, TTS și animație sincronizată contribuie la îmbunătățirea experienței de învățare, făcând-o mai naturală, mai interactivă și mai accesibilă.
 
