@@ -8,14 +8,12 @@ from langchain_community.vectorstores import FAISS
 from rouge_score import rouge_scorer # Metrica ROUGE
 from scipy.spatial.distance import cosine # Metrica Similaritate Cosinus
 
-# --- Configurare ---
 DB_FAISS_PATH = 'vectorstore/'
 EMBEDDING_MODEL_NAME = "thenlper/gte-small"
 LM_STUDIO_URL = "http://localhost:1234/v1"
 LLM_MODEL = "mistral-7b-instruct-v0.3.Q4_K_M.gguf" # Modelul tău
 EVAL_FILE_PATH = "evaluare.json" # Fișierul tău JSON
 
-# --- Funcții Helper (Copiate din run_rag.py) ---
 
 def load_db():
     """Încarcă baza de date vectorială FAISS."""
@@ -37,22 +35,22 @@ def create_prompt(context_docs, query):
     """Creează promptul final pentru LLM."""
     context = "\n\n---\n\n".join([doc.page_content for doc in context_docs])
     prompt_template = f"""
-Ești un asistent AI specializat în cursul de geometrie. 
-Răspunde la următoarea întrebare bazându-te **exclusiv** pe contextul oferit mai jos. 
-Textul contextului este în limba română, dar fără diacritice.
-Răspunsul tău trebuie să fie în limba română (poți folosi diacritice în răspunsul tău).
-Dacă răspunsul nu se află în context, spune "Informatia nu a fost gasita in materialele de curs."
+        Ești un asistent AI specializat în cursul de geometrie. 
+        Răspunde la următoarea întrebare bazându-te **exclusiv** pe contextul oferit mai jos. 
+        Textul contextului este în limba română, dar fără diacritice.
+        Răspunsul tău trebuie să fie în limba română (poți folosi diacritice în răspunsul tău).
+        Dacă răspunsul nu se află în context, spune "Informatia nu a fost gasita in materialele de curs."
 
-CONTEXT:
----
-{context}
----
+        CONTEXT:
+        ---
+        {context}
+        ---
 
-ÎNTREBARE:
-{query}
+        ÎNTREBARE:
+        {query}
 
-RĂSPANS:
-"""
+        RĂSPUNS:
+    """
     return prompt_template
 
 def get_llm_response(prompt, client):
