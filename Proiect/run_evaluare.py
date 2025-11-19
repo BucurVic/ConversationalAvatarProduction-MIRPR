@@ -1,21 +1,19 @@
 import json
 import time
-from tqdm import tqdm  # Pentru o bară de progres frumoasă
+from tqdm import tqdm  
 from unidecode import unidecode
 from openai import OpenAI
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
-from rouge_score import rouge_scorer # Metrica ROUGE
-from scipy.spatial.distance import cosine # Metrica Similaritate Cosinus
+from rouge_score import rouge_scorer 
+from scipy.spatial.distance import cosine 
 
-# --- Configurare ---
 DB_FAISS_PATH = 'vectorstore/'
 EMBEDDING_MODEL_NAME = "thenlper/gte-small"
 LM_STUDIO_URL = "http://localhost:1234/v1"
-LLM_MODEL = "mistral-7b-instruct-v0.3.Q4_K_M.gguf" # Modelul tău
-EVAL_FILE_PATH = "evaluare.json" # Fișierul tău JSON
+LLM_MODEL = "mistral-7b-instruct-v0.3.Q4_K_M.gguf" 
+EVAL_FILE_PATH = "evaluare.json" 
 
-# --- Funcții Helper (Copiate din run_rag.py) ---
 
 def load_db():
     """Încarcă baza de date vectorială FAISS."""
@@ -37,22 +35,22 @@ def create_prompt(context_docs, query):
     """Creează promptul final pentru LLM."""
     context = "\n\n---\n\n".join([doc.page_content for doc in context_docs])
     prompt_template = f"""
-Ești un asistent AI specializat în cursul de geometrie. 
-Răspunde la următoarea întrebare bazându-te **exclusiv** pe contextul oferit mai jos. 
-Textul contextului este în limba română, dar fără diacritice.
-Răspunsul tău trebuie să fie în limba română (poți folosi diacritice în răspunsul tău).
-Dacă răspunsul nu se află în context, spune "Informatia nu a fost gasita in materialele de curs."
+        Ești un asistent AI specializat în cursul de geometrie. 
+        Răspunde la următoarea întrebare bazându-te **exclusiv** pe contextul oferit mai jos. 
+        Textul contextului este în limba română, dar fără diacritice.
+        Răspunsul tău trebuie să fie în limba română (poți folosi diacritice în răspunsul tău).
+        Dacă răspunsul nu se află în context, spune "Informatia nu a fost gasita in materialele de curs."
 
-CONTEXT:
----
-{context}
----
+        CONTEXT:
+        ---
+        {context}
+        ---
 
-ÎNTREBARE:
-{query}
+        ÎNTREBARE:
+        {query}
 
-RĂSPANS:
-"""
+        RĂSPUNS:
+    """
     return prompt_template
 
 def get_llm_response(prompt, client):
@@ -125,20 +123,19 @@ if __name__ == "__main__":
         print("[EROARE] Nu se poate continua fără setul de evaluare. Opreste scriptul.")
         exit()
         
-    # 4. Inițializează clientul LM Studio o singură dată
+    
     print("[INFO] Inițializare client LM Studio...")
     client = OpenAI(base_url=LM_STUDIO_URL, api_key="lm-studio")
 
     total_rouge_l = 0
     total_semantic_similarity = 0
-    results = [] # Stocăm toate rezultatele
+    results = []
 
     print(f"\n[INFO] Se începe evaluarea pe {len(eval_set)} exemple...")
     
-    # 5. Iterează prin fiecare întrebare (folosim tqdm pentru bara de progres)
     for item in tqdm(eval_set, desc="Procesare întrebări"):
         query_original = item["intrebare"]
-        raspuns_asteptat_norm = item["raspuns_asteptat"] # Acesta e deja normalizat
+        raspuns_asteptat_norm = item["raspuns_asteptat"] 
 
         # 5.1. Normalizează întrebarea pentru căutare
         query_normalized = unidecode(query_original)
@@ -156,7 +153,7 @@ if __name__ == "__main__":
             raspuns_generat_raw = "" # Marchează ca eșec
 
         # 5.5. Normalizare Răspuns Generat
-        # Normalizăm răspunsul de la Mistral pentru o comparație corectă (ex. "spatiu" vs "spatiu")
+        
         raspuns_generat_norm = unidecode(raspuns_generat_raw)
 
         # 5.6. Calcul Metrici
@@ -185,7 +182,7 @@ if __name__ == "__main__":
         print(f"**Similaritate Semantică (Medie): {avg_semantic_similarity:.2f}%**")
         
         print("\n--- EXEMPLE (Corect / Greșit) ---")
-        # Afișăm primele 3 exemple pentru raportul tău
+        
         for i, res in enumerate(results[:3]):
             print(f"\nExemplul #{i+1}")
             print(f"  Întrebare: {res['intrebare']}")

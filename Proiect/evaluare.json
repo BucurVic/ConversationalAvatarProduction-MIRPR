@@ -198,5 +198,207 @@
   {
     "intrebare": "Care este ecuația hiperboloidului cu o pânză?",
     "raspuns_asteptat": "Se numeste hiperboloid cu o panza locul geometric al punctelor din spatiu ale caror coordonate relativ la un sistem rectangular verifica ecuatia x2/a2 + y2/b2 - z2/c2 = 1."
+  },
+
+  
+
+
+
+
+
+
+
+
+  {
+    "intrebare": "Ce este o transformare geometrică?",
+    "raspuns_asteptat": "Se numeste transformare geometrica o aplicatie care asociaza fiecarui punct M al spatiului un punct M' determinat dupa o anumita lege."
+  },
+  {
+    "intrebare": "Ce este o translație în geometrie?",
+    "raspuns_asteptat": "Translatia de vector a este transformarea geometrica ce asociaza fiecarui punct M punctul M' astfel incat vectorul MM' = a."
+  },
+  {
+    "intrebare": "Care este ecuația translației unui punct în plan?",
+    "raspuns_asteptat": "Daca punctul M are coordonatele (x, y) si se aplica o translatie de vector a = (a1, a2), atunci imaginea M' are coordonatele x' = x + a1, y' = y + a2."
+  },
+  {
+    "intrebare": "Cum se definește rotația în jurul originii în plan?",
+    "raspuns_asteptat": "Rotația de unghi α în jurul originii O este transformarea care asociază fiecărui punct M(x, y) punctul M'(x', y') cu x' = x cos α - y sin α, y' = x sin α + y cos α."
+  },
+  {
+    "intrebare": "Care este matricea rotației în jurul axei Oz?",
+    "raspuns_asteptat": "Matricea rotației de unghi φ în jurul axei Oz este: Rz(φ) = [[cos φ, -sin φ, 0], [sin φ, cos φ, 0], [0, 0, 1]]."
+  },
+  {
+    "intrebare": "Cum se definește simetria față de o dreaptă în plan?",
+    "raspuns_asteptat": "Simetria față de o dreaptă d este transformarea care asociază fiecărui punct M punctul M' astfel încât d este mediatoarea segmentului [MM’]."
+  },
+  {
+    "intrebare": "Cum se definește simetria față de un plan?",
+    "raspuns_asteptat": "Simetria față de un plan α este transformarea care asociază fiecărui punct M punctul M’ astfel încât planul α este planul mediatoare al segmentului [MM’]."
+  },
+  {
+    "intrebare": "Cum se definește omotetia (scalarea) de centru O și raport k?",
+    "raspuns_asteptat": "Omotetia de centru O și raport k este transformarea care asociază fiecărui punct M punctul M' situat pe semidreapta OM astfel încât OM' = k * OM."
+  },
+  {
+    "intrebare": "Care este ecuația omotetiei în coordonate carteziene?",
+    "raspuns_asteptat": "Dacă punctul M(x, y, z) se transformă printr-o omotetie de centru O(x0, y0, z0) și raport k, atunci coordonatele imaginii sunt x' = x0 + k(x - x0), y' = y0 + k(y - y0), z' = z0 + k(z - z0)."
+  },
+  {
+    "intrebare": "Ce este o reflexie față de axa Ox?",
+    "raspuns_asteptat": "Reflexia față de axa Ox este transformarea care lasă neschimbate coordonatele abscisei și schimbă semnul ordonatei: (x', y') = (x, -y)."
+  },
+  {
+    "intrebare": "Ce este o reflexie față de axa Oy?",
+    "raspuns_asteptat": "Reflexia față de axa Oy este transformarea care schimbă semnul abscisei și păstrează ordonata: (x', y') = (-x, y)."
+  },
+  {
+    "intrebare": "Care este definiția unei forfecări (shear)?",
+    "raspuns_asteptat": "Forfecarea este transformarea care deplasează punctele proporțional cu una dintre coordonate, menținând o direcție fixă neschimbată."
+  },
+  {
+    "intrebare": "Care este matricea unei forfecări orizontale în plan?",
+    "raspuns_asteptat": "Matricea unei forfecări orizontale este: Shx(k) = [[1, k], [0, 1]]."
+  },
+  {
+    "intrebare": "Care este matricea unei forfecări verticale în plan?",
+    "raspuns_asteptat": "Matricea unei forfecări verticale este: Shy(k) = [[1, 0], [k, 1]]."
+  },
+  {
+    "intrebare": "Cum se compune o rotație urmată de o translație?",
+    "raspuns_asteptat": "O rotație urmată de o translație este o transformare afină reprezentată de o matrice de rotație urmată de un vector de translație aplicat coordonatelor punctului."
+  },
+  {
+    "intrebare": "Ce este o transformare afină?",
+    "raspuns_asteptat": "Transformarea afină este transformarea geometrică ce păstrează coliniaritatea punctelor și raporturile distanțelor pe drepte paralele."
+  },
+  {
+    "intrebare": "Ce este un sistem de coordonate carteziene?",
+    "raspuns_asteptat": "Un sistem de coordonate carteziene este format dintr-un punct fix O și trei axe perpendiculare între ele, notate Ox, Oy, Oz."
+  },
+  {
+    "intrebare": "Cum sunt definite coordonatele polare ale unui punct în plan?",
+    "raspuns_asteptat": "Coordonatele polare ale unui punct M sunt perechea (ρ, θ) unde ρ este distanța de la origine, iar θ unghiul făcut cu axa Ox pozitivă."
+  },
+  {
+    "intrebare": "Care este relația dintre coordonatele polare și cele carteziene?",
+    "raspuns_asteptat": "Transformarea între coordonatele polare și cele carteziene este dată de x = ρ cos θ, y = ρ sin θ."
+  },
+  {
+    "intrebare": "Cum se definesc coordonatele cilindrice ale unui punct?",
+    "raspuns_asteptat": "Coordonatele cilindrice ale unui punct M sunt (ρ, θ, z) unde (ρ, θ) sunt coordonatele polare ale proiecției punctului pe planul xOy și z este coordonata pe axa Oz."
+  },
+  {
+    "intrebare": "Care sunt formulele de trecere din coordonate cilindrice în carteziene?",
+    "raspuns_asteptat": "x = ρ cos θ, y = ρ sin θ, z = z."
+  },
+  {
+    "intrebare": "Cum se definesc coordonatele sferice ale unui punct?",
+    "raspuns_asteptat": "Coordonatele sferice ale unui punct M sunt (ρ, θ, φ), unde ρ este distanța de la origine, θ este unghiul dintre proiecția pe planul xOy și axa Ox, iar φ este unghiul cu axa Oz."
+  },
+  {
+    "intrebare": "Care sunt formulele de trecere din coordonate sferice în carteziene?",
+    "raspuns_asteptat": "x = ρ sin φ cos θ, y = ρ sin φ sin θ, z = ρ cos φ."
+  },
+  {
+    "intrebare": "Cum se definesc fasciculele de drepte?",
+    "raspuns_asteptat": "Se numește fascicul de drepte mulțimea tuturor dreptei din plan care trec printr-un punct fix numit centrul fasciculului."
+  },
+  {
+    "intrebare": "Cum se definesc fasciculele de plane?",
+    "raspuns_asteptat": "Se numește fascicul de plane mulțimea planurilor care conțin o dreaptă fixă comună, numită axa fasciculului."
+  },
+  {
+    "intrebare": "Cum se scrie ecuația unui fascicul de plane?",
+    "raspuns_asteptat": "Ecuația generală a unui fascicul de plane este dată de forma: α(Ax + By + Cz + D) + β(A'x + B'y + C'z + D') = 0."
+  },
+  {
+    "intrebare": "Cum se definește un snop de drepte?",
+    "raspuns_asteptat": "Snopul de drepte este mulțimea dreptei situate într-un plan, concurente într-un punct fix sau paralele între ele."
+  },
+  {
+    "intrebare": "Care sunt pozițiile relative ale unei drepte față de un plan?",
+    "raspuns_asteptat": "O dreaptă și un plan pot fi incidente (au un punct comun), paralele (nu se intersectează), sau conținute una în alta."
+  },
+  {
+    "intrebare": "Cum se definește distanța de la un punct la o dreaptă în spațiu?",
+    "raspuns_asteptat": "Distanța de la un punct M la o dreaptă Δ este lungimea perpendicularei dusă din M pe Δ."
+  },
+  {
+    "intrebare": "Ce este o suprafață de rotație?",
+    "raspuns_asteptat": "O suprafață de rotație se obține prin rotirea unei curbe plane în jurul unei axe fixe din planul acelei curbe."
+  },
+  {
+    "intrebare": "Cum se definește o sferă?",
+    "raspuns_asteptat": "Se numește sferă locul geometric al punctelor din spațiu situate la o distanță constantă R de un punct fix O, numit centru."
+  },
+  {
+    "intrebare": "Care este ecuația sferei de centru O(x0, y0, z0) și rază R?",
+    "raspuns_asteptat": "(x - x0)^2 + (y - y0)^2 + (z - z0)^2 = R^2."
+  },
+  {
+    "intrebare": "Ce este un cilindru circular drept?",
+    "raspuns_asteptat": "Cilindrul circular drept este suprafața generată de o dreaptă care se deplasează paralel cu ea însăși, trecând printr-o curbă cerc de bază."
+  },
+  {
+    "intrebare": "Care este ecuația unui cilindru circular drept de axă Oz?",
+    "raspuns_asteptat": "Ecuația unui cilindru circular drept cu axa Oz este x^2 + y^2 = R^2."
+  },
+  {
+    "intrebare": "Ce este un con de rotație?",
+    "raspuns_asteptat": "Conul de rotație este suprafața obținută prin rotirea unei drepte care trece printr-un punct fix numit vârf și face un unghi constant cu o axă fixă."
+  },
+  {
+    "intrebare": "Care este ecuația canonică a conului de rotație?",
+    "raspuns_asteptat": "x^2 + y^2 = z^2 * tan^2 α."
+  },
+  {
+    "intrebare": "Cum se definește un hiperboloid cu două pânze?",
+    "raspuns_asteptat": "Se numește hiperboloid cu două pânze locul geometric al punctelor care satisfac ecuația x^2/a^2 + y^2/b^2 - z^2/c^2 = -1."
+  },
+  {
+    "intrebare": "Cum se definește un paraboloid eliptic?",
+    "raspuns_asteptat": "Paraboloidul eliptic este suprafața de ecuație x^2/a^2 + y^2/b^2 = 2pz."
+  },
+  {
+    "intrebare": "Cum se definește un paraboloid hiperbolic?",
+    "raspuns_asteptat": "Paraboloidul hiperbolic este suprafața de ecuație x^2/a^2 - y^2/b^2 = 2pz."
+  },
+  {
+    "intrebare": "Ce este o quadrică?",
+    "raspuns_asteptat": "Quadricile sunt suprafețe de gradul al doilea, adică locuri geometrice ale punctelor ale căror coordonate verifică o ecuație polinomială de gradul doi în x, y, z."
+  },
+  {
+    "intrebare": "Care este forma generală a ecuației unei quadrici?",
+    "raspuns_asteptat": "Forma generală a unei quadrici este: Ax^2 + By^2 + Cz^2 + 2Dyz + 2Ezx + 2Fxy + 2Gx + 2Hy + 2Iz + J = 0."
+  },
+  {
+    "intrebare": "Ce este o elipsoidă de rotație?",
+    "raspuns_asteptat": "Elipsoida de rotație este suprafața obținută prin rotirea unei elipse în jurul unei axe a sale."
+  },
+  {
+    "intrebare": "Ce este o suprafață cilindrică?",
+    "raspuns_asteptat": "O suprafață cilindrică este locul geometric al dreptei paralele cu o direcție fixă și care intersectează o curbă dată numită directrică."
+  },
+  {
+    "intrebare": "Ce este o suprafață conică?",
+    "raspuns_asteptat": "O suprafață conică este locul geometric al dreptei care trec printr-un punct fix numit vârf și care intersectează o curbă dată numită directrică."
+  },
+  {
+    "intrebare": "Ce este o proiecție ortogonală?",
+    "raspuns_asteptat": "Proiecția ortogonală a unui punct pe o dreaptă sau pe un plan este piciorul perpendicularei coborâte din acel punct pe dreapta sau planul respectiv."
+  },
+  {
+    "intrebare": "Ce proprietăți are o proiecție ortogonală?",
+    "raspuns_asteptat": "Proiecția ortogonală păstrează lungimile pe direcțiile perpendiculare și transformă unghiurile drepte în unghiuri drepte."
+  },
+  {
+    "intrebare": "Ce este o proiecție paralelă?",
+    "raspuns_asteptat": "Proiecția paralelă este transformarea care asociază fiecărui punct M punctul M’ determinat de o direcție fixă, astfel încât MM’ este paralel cu direcția dată."
+  },
+  {
+    "intrebare": "Ce este o izometrie?",
+    "raspuns_asteptat": "O izometrie este o transformare geometrică care păstrează distanțele dintre puncte."
   }
 ]

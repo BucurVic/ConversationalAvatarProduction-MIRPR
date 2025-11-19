@@ -1,0 +1,16 @@
+python3 -m venv venv
+source venv/bin/activate
+
+python3.10 -m venv venv310
+source venv310/bin/activate
+
+pip install -r requirements.txt
+pip install -r requirements310.txt
+
+pip freeze > requirements.txt
+
+chmod +x scripts/setup_sadtalker.sh
+./scripts/setup_sadtalker.sh
+
+chmod +x scripts/setup_wav2lip.sh
+./scripts/setup_wav2lip.sh
