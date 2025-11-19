@@ -5,80 +5,112 @@ from pathlib import Path
 
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
-
 from unidecode import unidecode
+from llama_cpp import Llama 
 
-# Import config global
-from scripts.config import (
-    DB_FAISS_PATH,
-    EMBEDDING_MODEL_NAME,
-    LM_STUDIO_URL,
-    LLM_MODEL,
-    SADTALKER_REPO,
-    USER_IMAGE,
-)
+try:
+    from scripts.config import (
+        SADTALKER_REPO,
+        USER_IMAGE,
+    )
+    # Importăm funcția de TTS a colegului
+    from generate_avatar.generate_tts import tts_piper
+except ImportError:
+    print("[WARN] Nu s-au putut importa modulele de Avatar (scripts.config). Se folosesc valori default.")
+    SADTALKER_REPO = "SadTalker"
+    USER_IMAGE = "input_img.jpg"
+  
 
-# TTS (Piper)
-from generate_avatar.generate_tts import tts_piper
+DB_FAISS_PATH = 'vectorstore/'
+EMBEDDING_MODEL_NAME = "thenlper/gte-small"
+
+LLM_MODEL_PATH = "./models/Meta-Llama-3-8B-Instruct.Q4_K_M.gguf"
 
 
-# ----------------------------------------------------------
-#                  ÎNCĂRCARE BAZĂ VECTORIALĂ
-# ----------------------------------------------------------
+
+
 def load_db():
-    print(f"Încărcarea modelului de embedding: {EMBEDDING_MODEL_NAME}...")
-    embeddings = HuggingFaceEmbeddings(
-        model_name=EMBEDDING_MODEL_NAME,
-        model_kwargs={"device": "cpu"},
-    )
-
-    print(f"Încărcarea bazei vectoriale din '{DB_FAISS_PATH}'...")
-
-    db = FAISS.load_local(
-        DB_FAISS_PATH,
-        embeddings,
-        allow_dangerous_deserialization=True,
-    )
-
-    print("Baza de date a fost încărcată cu succes.")
+    """Încarcă baza de date vectorială FAISS."""
+    print(f"[INFO] Se încarcă baza de date...")
+    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL_NAME, model_kwargs={'device': 'cpu'})
+    db = FAISS.load_local(DB_FAISS_PATH, embeddings, allow_dangerous_deserialization=True)
     return db
 
+def load_llm():
+    """Încarcă modelul Llama 3 8B folosind llama-cpp-python."""
+    print(f"[INFO] Se încarcă modelul Llama 3 8B din: {LLM_MODEL_PATH}...")
+    try:
+        llm = Llama(
+            model_path=LLM_MODEL_PATH,
+            n_gpu_layers=-1, 
+            n_ctx=4096, 
+            verbose=False
+        )
+        print("[SUCCESS] Modelul Llama 3 a fost încărcat.")
+        return llm
+    except Exception as e:
+        print(f"[EROARE FATALĂ] Nu s-a putut încărca modelul: {e}")
+        return None
 
-# ----------------------------------------------------------
-#              GENERARE PROMPT PENTRU RAG
-# ----------------------------------------------------------
 def create_prompt(context_docs, query):
-    context = "\n\n---\n\n".join([doc.page_content for doc in context_docs])
-
+    """Creează promptul 'Tutore AI' structurat."""
+    context = "\n\n".join([doc.page_content for doc in context_docs])
+    
     prompt_template = f"""
-Ești un asistent AI specializat în cursul de geometrie. 
-Răspunde la următoarea întrebare bazându-te **exclusiv** pe contextul oferit mai jos**.**
-Textul contextului este în limba română, dar fără diacritice.
-Răspunsul tău trebuie să fie în limba română (poți folosi diacritice).
-Dacă răspunsul nu se află în context, spune: "Informatia nu a fost gasita in materialele de curs."
+Ești un Asistent Universitar AI expert, prietenos și răbdător.
 
-CONTEXT:
+INSTRUCȚIUNI STRICTE:
+1. Răspunsul tău trebuie să fie bazat **EXCLUSIV** pe textul de la secțiunea "CONTEXT" de mai jos. 
+2. Structurează răspunsul în două părți clare:
+   a) **Definiția/Răspunsul direct:** Preia informația exactă și riguroasă din text.
+   b) **Explicația simplă:** Reformulează pe scurt, "ca pentru studenți", ca să fie ușor de înțeles.
+3. Dacă informația nu există în context, spune sincer: "Nu am găsit această informație în materialele de curs."
+4. Răspunde în limba română.
+
+CONTEXT DIN MANUAL:
 ---
 {context}
 ---
 
-ÎNTREBARE:
+ÎNTREBAREA STUDENTULUI:
 {query}
 
-RĂSPUNS:
+RĂSPUNSUL TĂU (Structurat):
 """
     return prompt_template
 
+def get_llm_response(prompt, llm_instance):
+    """Trimite promptul către instanța Llama (local)."""
+    if llm_instance is None: return None
+    
+    try:
+        start_time = time.time()
+        
+        output = llm_instance.create_chat_completion(
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.1
+        )
+        end_time = time.time()
+        
+        # La Llama 3 nu avem nevoie de filtrarea complexă de la GPT-OSS (fără <|channel|>)
+        clean_text = output['choices'][0]['message']['content']
+        
+        print(f"[INFO] Generare text finalizată în {end_time - start_time:.2f} secunde.")
+        return clean_text
 
-# ----------------------------------------------------------
-#          GENERARE VIDEO AVATAR CU SADTALKER (3.10)
-# ----------------------------------------------------------
+    except Exception as e:
+        print(f"[EROARE] Eroare la generarea răspunsului text: {e}")
+        return None
+
+
+
 def generate_avatar_video(answer_text: str):
     """
-    Pipeline:
-    - generează audio cu Piper (în venv principal, Py 3.13)
+    Pipeline integrat:
+    - generează audio cu Piper (în venv principal)
     - apelează SadTalker prin Python 3.10 (venv310) pentru lip-sync
     """
+    text_for_tts = answer_text.replace("*", "").replace("#", "").replace("a)", "").replace("b)", "")
 
     base_dir = Path(__file__).resolve().parent
     work_dir = base_dir / "runtime" / "avatar"
@@ -88,16 +120,24 @@ def generate_avatar_video(answer_text: str):
     video_output_dir = work_dir / "video"
     video_output_dir.mkdir(parents=True, exist_ok=True)
 
-    # 1. TTS cu Piper
     print("\n[INFO] Generare TTS (Piper)...")
-    tts_piper(answer_text, str(audio_path))
-    print(f"[INFO] Audio generat: {audio_path}")
+    try:
+        tts_piper(text_for_tts, str(audio_path))
+        print(f"[INFO] Audio generat: {audio_path}")
+    except Exception as e:
+        print(f"[EROARE TTS] Nu s-a putut genera audio: {e}")
+        return None
 
-    # 2. Rulează SadTalker în venv310
     print("\n[INFO] Generare avatar cu SadTalker (Python 3.10)...")
 
     python310 = base_dir / "venv310" / "bin" / "python"
     run_sadtalker_script = base_dir / "generate_avatar" / "run_sadtalker.py"
+
+    if not python310.exists():
+        print(f"[EROARE] Nu am găsit mediul virtual pentru SadTalker la: {python310}")
+        print("Verifică dacă ai copiat folderul venv310 de la coleg.")
+        # Continuăm fără video, doar text
+        return None
 
     cmd = [
         str(python310),
@@ -109,19 +149,17 @@ def generate_avatar_video(answer_text: str):
         "--output",
         str(video_output_dir.resolve()),
         "--repo",
-        str((base_dir / SADTALKER_REPO).resolve())
-        if not Path(SADTALKER_REPO).is_absolute()
-        else SADTALKER_REPO,
+        str((base_dir / SADTALKER_REPO).resolve()) if not Path(SADTALKER_REPO).is_absolute() else SADTALKER_REPO,
     ]
 
     env = os.environ.copy()
-    # Punem venv310/bin pe PATH ca siguranță
     env["PATH"] = f"{base_dir / 'venv310' / 'bin'}:" + env.get("PATH", "")
 
-    print("[run_rag] Comandă SadTalker:")
-    print(" ", " ".join(cmd))
-
-    subprocess.run(cmd, check=True, env=env)
+    try:
+        subprocess.run(cmd, check=True, env=env)
+    except subprocess.CalledProcessError as e:
+        print(f"[EROARE SADTALKER] Generarea video a eșuat: {e}")
+        return None
 
     # 3. Caută ultimul .mp4 generat în folderul video
     mp4_files = list(video_output_dir.glob("*.mp4"))
@@ -130,30 +168,12 @@ def generate_avatar_video(answer_text: str):
         final_video = max(mp4_files, key=lambda p: p.stat().st_mtime)
 
     if final_video:
-        print(f"\n[INFO] Video generat cu succes: {final_video}")
+        print(f"\n[SUCCESS] Video generat cu succes: {final_video}")
     else:
         print("\n[AVERTISMENT] Nu am găsit niciun .mp4 în folderul video.")
 
     return final_video
 
 
-# ----------------------------------------------------------
-#                        MAIN DEMO
-# ----------------------------------------------------------
-if __name__ == "__main__":
 
-    response = (
-        "Spațiul vectorial este o structură algebrică în care vectorii pot fi adunați "
-        "și înmulțiți cu numere reale, respectând anumite reguli fundamentale."
-    )
-
-    import torch
-    print(torch.backends.mps.is_available())
-
-
-    if response:
-        print("\n--- RĂSPUNSUL RAG ---")
-        print(response)
-
-        print("\n[INFO] Inițiere pipeline avatar...")
-        generate_avatar_video(response)
+#legatura creier cu avatar mai jos
