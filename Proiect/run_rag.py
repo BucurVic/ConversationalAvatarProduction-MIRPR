@@ -1,106 +1,162 @@
 import time
+import os
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
-from openai import OpenAI
 from unidecode import unidecode
+from llama_cpp import Llama # <-- NOU: Biblioteca pentru rulare locală
 
 # --- Configurare ---
 DB_FAISS_PATH = 'vectorstore/'
 EMBEDDING_MODEL_NAME = "thenlper/gte-small"
-LM_STUDIO_URL = "http://localhost:1234/v1"
 
-
-LLM_MODEL = "mistral-7b-instruct-v0.3.Q4_K_M.gguf"
+# Calea directă către modelul tău descărcat (schimbat de la LLM_MODEL la LLM_MODEL_PATH)
+LLM_MODEL_PATH = "./models/Meta-Llama-3-8B-Instruct.Q4_K_M.gguf"
 
 def load_db():
     """Încarcă baza de date vectorială FAISS."""
-    print(f"Încărcarea modelului de embedding: {EMBEDDING_MODEL_NAME}...")
-    embeddings = HuggingFaceEmbeddings(
-        model_name=EMBEDDING_MODEL_NAME,
-        model_kwargs={'device': 'cpu'}
-    )
-    
-    print(f"Încărcarea bazei de date vectoriale din '{DB_FAISS_PATH}'...")
-    
-    db = FAISS.load_local(
-        DB_FAISS_PATH, 
-        embeddings, 
-        allow_dangerous_deserialization=True 
-    )
-    print("Baza de date a fost încărcată cu succes.")
+    print(f"[INFO] Se încarcă baza de date...")
+    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL_NAME, model_kwargs={'device': 'cpu'})
+    db = FAISS.load_local(DB_FAISS_PATH, embeddings, allow_dangerous_deserialization=True)
     return db
 
+# --- NOU: Funcție pentru a încărca LLM-ul local ---
+def load_llm():
+    """Încarcă modelul LLM (GGUF) folosind llama-cpp-python."""
+    print(f"[INFO] Se încarcă modelul GPT-OSS-20B din: {LLM_MODEL_PATH}...")
+    try:
+        # n_gpu_layers=-1 folosește GPU-ul la maxim (Metal/CUDA)
+        llm = Llama(
+            model_path=LLM_MODEL_PATH,
+            n_gpu_layers=-1, 
+            n_ctx=4096,
+            verbose=False
+        )
+        print("[SUCCESS] Modelul LLM a fost încărcat pe GPU.")
+        return llm
+    except Exception as e:
+        print(f"[EROARE FATALĂ] Nu s-a putut încărca modelul GGUF: {e}")
+        print("Asigură-te că fișierul există la calea specificată.")
+        return None
+
 def create_prompt(context_docs, query):
-    """Creează promptul final pentru LLM."""
-    
-    context = "\n\n---\n\n".join([doc.page_content for doc in context_docs])
-    
+    """Creează promptul 'Tutore AI' structurat."""
+    context = "\n\n".join([doc.page_content for doc in context_docs])
     
     prompt_template = f"""
-Ești un asistent AI specializat în cursul de geometrie. 
-Răspunde la următoarea întrebare bazându-te **exclusiv** pe contextul oferit mai jos. 
-Textul contextului este în limba română, dar fără diacritice.
-Răspunsul tău trebuie să fie în limba română (poți folosi diacritice în răspunsul tău).
-Dacă răspunsul nu se află în context, spune "Informatia nu a fost gasita in materialele de curs."
+Ești un Asistent Universitar AI expert, prietenos și răbdător.
 
-CONTEXT:
+INSTRUCȚIUNI STRICTE:
+1. Răspunsul tău trebuie să fie bazat **EXCLUSIV** pe textul de la secțiunea "CONTEXT" de mai jos. 
+2. Structurează răspunsul în două părți clare:
+   a) **Definiția/Răspunsul direct:** Preia informația exactă și riguroasă din text.
+   b) **Explicația simplă:** Reformulează pe scurt, "ca pentru studenți", ca să fie ușor de înțeles.
+3. Dacă informația nu există în context, spune sincer: "Nu am găsit această informație în materialele de curs."
+4. Răspunde în limba română.
+
+CONTEXT DIN MANUAL:
 ---
 {context}
 ---
 
-ÎNTREBARE:
+ÎNTREBAREA STUDENTULUI:
 {query}
 
-RĂSPUNS:
+RĂSPUNSUL TĂU (Structurat):
 """
     return prompt_template
 
-def get_llm_response(prompt):
-    """Trimite promptul către LM Studio și preia răspunsul."""
-    print("\n[INFO] Conectare la LM Studio...")
+# --- MODIFICAT: Funcția de Răspuns folosește instanța locală LLM ---
+def get_llm_response(prompt, llm_instance):
+    """Trimite promptul către instanța Llama (local) și preia răspunsul curat."""
+    if llm_instance is None: return None
     
-    client = OpenAI(base_url=LM_STUDIO_URL, api_key="lm-studio") 
-
     try:
         start_time = time.time()
-        completion = client.chat.completions.create(
-            model=LLM_MODEL, 
-            messages=[
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.3, # Setăm o temperatură joasă pentru răspunsuri fidele
+        
+        # Rulare locală
+        output = llm_instance.create_chat_completion(
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.1
         )
         end_time = time.time()
         
-        print(f"[INFO] Răspuns generat în {end_time - start_time:.2f} secunde.")
-        return completion.choices[0].message.content
+        # Extragem textul brut
+        raw_text = output['choices'][0]['message']['content']
         
+        # --- FILTRARE PENTRU GPT-OSS-20B ---
+        # Acest model pune răspunsul final după tag-ul: <|channel|>final<|message|>
+        # Verificăm dacă există acest tag și tăiem tot ce e înainte de el.
+        marker = "<|channel|>final<|message|>"
+        
+        if marker in raw_text:
+            # Luăm ultima parte (după marker)
+            clean_text = raw_text.split(marker)[-1]
+        else:
+            # Dacă nu găsește markerul, înseamnă că a răspuns direct (păstrăm tot)
+            clean_text = raw_text
+            
+        # Curățăm eventuale tag-uri de final rămase
+        clean_text = clean_text.replace("<|end|>", "").strip()
+        # -----------------------------------
+        
+        print(f"[INFO] Generare finalizată în {end_time - start_time:.2f} secunde.")
+        return clean_text
+
     except Exception as e:
-        print(f"\n[EROARE] Nu s-a putut conecta la LM Studio.")
-        print("Verifică următoarele:")
-        print(f"1. Serverul LM Studio este pornit la {LM_STUDIO_URL}?")
-        print(f"2. Numele modelului '{LLM_MODEL}' este corect și modelul este încărcat complet?")
-        print(f"Detalii eroare: {e}")
+        print(f"[EROARE] Eroare la generarea răspunsului: {e}")
         return None
 
-# --- Funcția principală ---
+# --- Funcția principală (Actualizată) ---
 if __name__ == "__main__":
-    # 1. Încarcă baza de date
+    # 1. Inițializare
     db = load_db()
+    llm = load_llm() # <-- Încărcăm modelul local, nu clientul API
     
-    query_original = "Care este teorema lui pitagora?"
-    
-    query_normalized = unidecode(query_original)
-    
-    print(f"\nÎntrebare originală: '{query_original}'")
-    print(f"Întrebare normalizată (pt. căutare): '{query_normalized}'")
+    if not llm:
+        exit()
+        
+    print("\n" + "="*60)
+    print("🎓 TUTORE AI ACTIVAT (Local GPT-OSS/Llama)")
+    print(f" Model: {LLM_MODEL_PATH.split('/')[-1]}")
+    print(" Scrie 'exit' pentru a ieși.")
+    print("="*60 + "\n")
 
-    context_docs = db.similarity_search(query_normalized, k=4)
-    
-    prompt = create_prompt(context_docs, query_original)
-    
-    response = get_llm_response(prompt)
-    
-    if response:
-        print("\n--- RĂSPUNSUL AVATARULUI ---")
-        print(response)
+    # 2. Buclă interactivă
+    while True:
+        query_original = input("\nÎntrebarea ta: ")
+        
+        if query_original.lower() in ['exit', 'quit']:
+            break
+            
+        # 3. Retrieval
+        query_normalized = unidecode(query_original)
+        context_docs = db.similarity_search(query_normalized, k=4)
+        
+        # Extragerea Surselor
+        surse_gasite = set()
+        for doc in context_docs:
+            raw_source = doc.metadata.get('source', 'Manual')
+            sursa_curata = " ".join(raw_source.split())
+            surse_gasite.add(sursa_curata)
+
+        # 4. Generare Răspuns
+        prompt = create_prompt(context_docs, query_original)
+        response = get_llm_response(prompt, llm) # <-- Trimitem la instanța LLM locală
+        
+        if response:
+            print("\n" + "="*60)
+            print("🎓 RĂSPUNS GENERAT:")
+            print("-" * 60)
+            print(response.strip())
+            
+            print("-" * 60)
+            print("📚 SURSE BIBLIOGRAFICE:")
+            sorted_sources = sorted(list(surse_gasite))
+            
+            for i, sursa in enumerate(sorted_sources):
+                if i < 3:
+                    print(f"   📍 {sursa}")
+                else:
+                    print(f"   ... (și altele)")
+                    break
+            print("="*60 + "\n")

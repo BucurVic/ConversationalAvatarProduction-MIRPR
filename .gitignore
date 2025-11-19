@@ -1,0 +1,4 @@
+models/
+vectorstore/
+venv/
+__pycache__/
