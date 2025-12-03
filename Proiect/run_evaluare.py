@@ -137,7 +137,6 @@ def get_llm_response(prompt, llm_instance):
         print(f"\n[EROARE] Generare eșuată: {e}")
         return ""
 
-
 def load_evaluation_set(file_path):
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
