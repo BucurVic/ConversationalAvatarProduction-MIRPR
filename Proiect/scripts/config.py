@@ -15,4 +15,4 @@ SADTALKER_REPO = str(BASE_DIR / "external" / "SadTalker")
 WAV2LIP_REPO = str(BASE_DIR / "external" / "Wav2Lip")
 
 # Avatar input image
-USER_IMAGE = str(BASE_DIR / "generate_avatar" / "input_img.jpg")
+USER_IMAGE = str(BASE_DIR / "generate_avatar" / "input_img.png")
