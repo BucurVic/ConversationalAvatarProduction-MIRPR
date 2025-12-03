@@ -74,6 +74,7 @@ python-dateutil
 python-dotenv
 pytz
 PyYAML
+PyMuPDF
 regex
 requests
 requests-toolbelt

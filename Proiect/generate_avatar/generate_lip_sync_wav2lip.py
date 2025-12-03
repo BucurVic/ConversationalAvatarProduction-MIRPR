@@ -44,14 +44,18 @@ def wav2lip_generate_video(
     audio_path_abs = str(Path(audio_path).resolve())
     checkpoint_path_abs = str(Path(wav2lip_repo) / "checkpoints" / "wav2lip_gan.pth")
 
+    project_root = Path(__file__).resolve().parents[1]  # adjust as needed
+    python310 = project_root / "venvWav2Lip" / "bin" / "python"
+
     # 3️⃣ Comandă Wav2Lip cu path-uri ABSOLUTE
     cmd = [
-        "python",
+        str(python310),
         "inference.py",
         "--face", static_video_abs,
         "--audio", audio_path_abs,
         "--outfile", output_video_abs,
         "--checkpoint_path", checkpoint_path_abs,
+        "--static", "True"
     ]
 
     subprocess.run(cmd, cwd=wav2lip_repo, check=True)
