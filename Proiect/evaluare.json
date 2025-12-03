@@ -1,0 +1,765 @@
+[
+  {
+    "intrebare": "Ce este un segment orientat?",
+    "raspuns_asteptat": "Un segment de dreapta pentru care s-a precizat care dintre capetele sale este originea si care extremitatea, se numeste segment orientat."
+  },
+  {
+    "intrebare": "Cum se definește egalitatea a două segmente orientate?",
+    "raspuns_asteptat": "Spunem ca doua segmente orientate AB si CD sunt egale daca A=C si B=D, cu alte cuvinte, daca ele au aceeasi origine si aceeasi extremitate."
+  },
+  {
+    "intrebare": "Ce este un vector liber?",
+    "raspuns_asteptat": "Se numeste vector liber o clasa de echivalenta de segmente orientate, in raport cu relatia de echipolenta."
+  },
+  {
+    "intrebare": "Cum se definește adunarea vectorilor folosind regula triunghiului?",
+    "raspuns_asteptat": "Vectorul OB se numeste suma vectorilor a si b si se noteaza cu a+b."
+  },
+  {
+    "intrebare": "Cum este definit produsul unui vector cu un scalar lambda?",
+    "raspuns_asteptat": "Produsul vectorului a cu scalarul este, prin definitie, un vector, notat la caracterizat in modul urmator: (i) modulul lui da este dat de ||lambda a|| := |lambda| * ||a||, (ii) directia lui da coincide cu directia lui a; (iii) sensul lui da coincide cu sensul lui a daca lambda>0 sau cu sensul opus sensului lui a daca lambda<0."
+  },
+  {
+    "intrebare": "Ce înseamnă că niște vectori sunt liniar dependenți?",
+    "raspuns_asteptat": "Vectorii a_1, a_2, ..., a_k se numesc liniar dependenti daca exista numerele reale lambda_1, ..., lambda_k nu toate nule, astfel incat lambda_1*a_1 + lambda_2*a_2 + ... + lambda_k*a_k = 0."
+  },
+  {
+    "intrebare": "Când sunt doi vectori liniar dependenți, din punct de vedere geometric?",
+    "raspuns_asteptat": "Doi vectori sunt liniar dependenti daca si numai daca sunt coliniari."
+  },
+  {
+    "intrebare": "Când sunt trei vectori liniar dependenți, din punct de vedere geometric?",
+    "raspuns_asteptat": "Pentru ca trei vectori sa fie liniar dependenti este necesar si suficient ca ei sa fie coplanari."
+  },
+  {
+    "intrebare": "Care este condiția de coliniaritate a trei puncte A, B, C?",
+    "raspuns_asteptat": "Trei puncte A, B, C sunt coliniare daca si numai daca intre vectorii lor de pozitie exista o relatie de forma alpha*r_A + beta*r_B + gamma*r_C = 0, in care coeficientii verifica relatia alpha + beta + gamma = 0."
+  },
+  {
+    "intrebare": "Care este condiția de coplanaritate a patru puncte A, B, C, D?",
+    "raspuns_asteptat": "Patru puncte sunt A, B, C, D sunt coplanare daca si numai daca intre vectorii lor de poizitie exista o relatie de forma alpha*r_A + beta*r_B + gamma*r_C + delta*r_D = 0, in care coeficientii nu sunt toti nuli si verifica relatia alpha + beta + gamma + delta = 0."
+  },
+  {
+    "intrebare": "Care este vectorul de poziție al centrului de greutate G al unui triunghi?",
+    "raspuns_asteptat": "vectorul de pozitie al punctului G de intersectie a medianelor (centrul de greutate): r = (1/3)*(r_1 + r_2 + r_3)."
+  },
+  {
+    "intrebare": "Care este vectorul de poziție al centrului cercului înscris (I) într-un triunghi?",
+    "raspuns_asteptat": "(I)r = 1/(a+b+c) * (a*r_1 + b*r_2 + c*r_3)."
+  },
+  {
+    "intrebare": "Care este condiția din Teorema lui Ceva?",
+    "raspuns_asteptat": "Atunci cevienele AM, BN si CP sunt concurente daca si numai daca lambda*mu*nu = -1."
+  },
+  {
+    "intrebare": "Care este condiția din Teorema lui Menelaus?",
+    "raspuns_asteptat": "Pentru ca in membrul drept al ecuatiei (1.12.64) sa avem vectorul nul, trebuie sa punem lambda*mu*nu = 1."
+  },
+  {
+    "intrebare": "Cum se definește produsul scalar a doi vectori?",
+    "raspuns_asteptat": "Se numeste produs scalar al celor doi vectori numarul real, notat ab, egal cu produsul dintre normele celor doi vectori si al cosinusului unghiului dintre ei, adica: a*b = ||a||*||b||*cos phi"
+  },
+  {
+    "intrebare": "Care este expresia produsului scalar în coordonate?",
+    "raspuns_asteptat": "produsul scalar a doi vectori, dati prin componentele lor relativ la un sistem de coordonate rectangular Oxyz, se exprima prin formula a*b = a_1*b_1 + a_2*b_2 + a_3*b_3."
+  },
+  {
+    "intrebare": "Când sunt doi vectori perpendiculari (ortogonali)?",
+    "raspuns_asteptat": "Doi vectori a si b sunt perpendiculari daca si numai daca produsul lor scalar este egal cu zero: a*b = 0."
+  },
+  {
+    "intrebare": "Cum se definește produsul vectorial?",
+    "raspuns_asteptat": "Produsul vectorial dintre vectorul a si vectorul b este, prin definitie, vectorul, notat prin a x b, determinat prin urmatoarele conditii: 1) daca vectorii a si b sunt coliniari, atunci... a x b este egal cu zero. 2) daca cei doi vectori nu sunt coliniari... (i) lungimea vectorului a x b este egala cu ||a||*||b||*|sin phi| (ii) vectorul a x b este perpendicular pe ambii vectori a si b; (iii) tripletul de vectori (a, b, a x b) este direct."
+  },
+  {
+    "intrebare": "Care este expresia produsului vectorial în coordonate?",
+    "raspuns_asteptat": "a x b = (a_2*b_3 - a_3*b_2)i + (a_3*b_1 - a_1*b_3)j + (a_1*b_2 - a_2*b_1)k."
+  },
+  {
+    "intrebare": "Cum se definește produsul mixt a trei vectori?",
+    "raspuns_asteptat": "Fie a, b si c trei vectori. Se numeste produs mixt al celor trei vectori numarul (a,b,c) := (a x b) * c."
+  },
+  {
+    "intrebare": "Care este expresia produsului mixt în coordonate?",
+    "raspuns_asteptat": "(a,b,c) = det([[a_1, a_2, a_3], [b_1, b_2, b_3], [c_1, c_2, c_3]])."
+  },
+  {
+    "intrebare": "Când sunt trei vectori coplanari, folosind produsul mixt?",
+    "raspuns_asteptat": "Pentru ca trei vectori a, b si c sa fie coplanari este necesar si suficient ca produsul lor mixt sa fie egal cu zero: (a,b,c) = 0."
+  },
+  {
+    "intrebare": "Care este ecuația generală a dreptei în plan?",
+    "raspuns_asteptat": "Se numeste ecuatie de gradul intai sau ecuatie liniara relativ la necunoscutele x si y o ecuatie de forma Ax + By + C = 0; unde A; B; C 2 R, iar coeficientii A si B nu se anuleaza simultan."
+  },
+  {
+    "intrebare": "Care este ecuația dreptei prin tăieturi?",
+    "raspuns_asteptat": "ecuatia va deveni x/a + y/b = 1: (2.2.7) Ecuatia (2.2.7) se numeste ecuatia dreptei prin taieturi."
+  },
+  {
+    "intrebare": "Care este ecuația vectorială a dreptei în plan?",
+    "raspuns_asteptat": "r = r0 + ta; (2.3.2) se numeste ecuatia vectoriala a dreptei."
+  },
+  {
+    "intrebare": "Care este ecuația canonică a dreptei în plan?",
+    "raspuns_asteptat": "sistemul (2.3.3) este echivalent cu ecuatia (x - x0) / l = (y - y0) / m ; (2.3.4) care se numeste ecuatia canonica a dreptei in plan."
+  },
+  {
+    "intrebare": "Care este condiția de perpendicularitate a două drepte date prin ecuațiile generale?",
+    "raspuns_asteptat": "conditia necesara si suficienta pentru ca dreptele (2.7.1) si (2.7.2) sa fie perpendiculare: A1*A2 + B1*B2 = 0."
+  },
+  {
+    "intrebare": "Care este formula distanței de la un punct la o dreaptă?",
+    "raspuns_asteptat": "formulele pentru abaterea si distanta de la un punct M0(x0, y0) pana la dreapta (2.6.4) se pot scrie d = |Ax0 + By0 + C| / sqrt(A^2 + B^2)."
+  },
+  {
+    "intrebare": "Care este ecuația vectorială a planului?",
+    "raspuns_asteptat": "r = r0 + sv + tw; (3.1.2) ecuatie care se numeste ecuatia vectoriala a planului."
+  },
+  {
+    "intrebare": "Care este ecuația generală a planului?",
+    "raspuns_asteptat": "Se numeste ecuatie liniara (generala) relativ la necunoscutele x; y; z o ecuatie de forma Ax + By + Cz + D = 0; unde cel putin unul dintre coeficientii A; B; C ai necunoscutelor este diferit de zero."
+  },
+  {
+    "intrebare": "Care este ecuația planului prin tăieturi?",
+    "raspuns_asteptat": "x/a + y/b + z/c - 1 = 0: (3.1.13) Ecuatia (3.1.13) se numeste ecuatia planului prin taieturi."
+  },
+  {
+    "intrebare": "Care este formula distanței de la un punct la un plan?",
+    "raspuns_asteptat": "d = |A*x0 + B*y0 + C*z0 + D| / sqrt(A^2 + B^2 + C^2)."
+  },
+  {
+    "intrebare": "Care sunt ecuațiile canonice ale unei drepte în spațiu?",
+    "raspuns_asteptat": "Ecuatiile (3.2.4) se numesc ecuatiile canonice ale dreptei... x - x0 / l = y - y0 / m = z - z0 / n."
+  },
+  {
+    "intrebare": "Care este condiția de perpendicularitate a două plane?",
+    "raspuns_asteptat": "planele sunt perpendiculare daca si numai daca A1*A2 + B1*B2 + C1*C2 = 0."
+  },
+  {
+    "intrebare": "Care este condiția de paralelism a două plane?",
+    "raspuns_asteptat": "planele sunt paralele exact atunci cand cei doi vectori normali sunt paraleli, adica daca si numai daca A1/A2 = B1/B2 = C1/C2."
+  },
+  {
+    "intrebare": "Care este formula distanței de la un punct la o dreaptă în spațiu?",
+    "raspuns_asteptat": "formula d = ||(r1 - r0) x a|| / ||a|| ne da distanta de la punctul M1, de vector de pozitie r1 la dreapta."
+  },
+  {
+    "intrebare": "Care este formula unghiului dintre o dreaptă și un plan?",
+    "raspuns_asteptat": "sin phi = |A*l + B*m + C*n| / (sqrt(A^2 + B^2 + C^2) * sqrt(l^2 + m^2 + n^2))."
+  },
+  {
+    "intrebare": "Care este definiția elipsei?",
+    "raspuns_asteptat": "Se numeste elipsa locul geometric al punctelor din plan pentru care suma distantelor de la ele pana la doua puncte fixe F1 si F2, numite focare este constanta, egala cu 2a, presupunandu-se ca distanta dintre cele doua focare este 2c, unde c este un numar real pozitiv sau nul, verificand inegalitatea c < a."
+  },
+  {
+    "intrebare": "Care este ecuația canonică a elipsei?",
+    "raspuns_asteptat": "x2/a2 + y2/b2 = 1: (5.1.6) ... se numeste ecuatia canonica a elipsei."
+  },
+  {
+    "intrebare": "Cum se definește excentricitatea elipsei?",
+    "raspuns_asteptat": "Se numeste excentricitate a elipsei numarul real e = c/a."
+  },
+  {
+    "intrebare": "Care este ecuația tangentei la elipsă într-un punct?",
+    "raspuns_asteptat": "ecuatia tangentei intr-un punct al unei elipse se poate scrie prin dedublare. xx0/a2 + yy0/b2 = 1."
+  },
+  {
+    "intrebare": "Care este definiția hiperbolei?",
+    "raspuns_asteptat": "Se numeste hiperbola figura geometrica formata din toate punctele din plan pentru care valoarea absoluta a diferentei distantelor pana la punctele fixe F1 si F2 este constanta, egala cu 2a."
+  },
+  {
+    "intrebare": "Care este ecuația canonică a hiperbolei?",
+    "raspuns_asteptat": "x2/a2 - y2/b2 = 1: (5.2.6) ... se numeste ecuatia canonica a hiperbolei."
+  },
+  {
+    "intrebare": "Care este ecuația tangentei la hiperbolă într-un punct?",
+    "raspuns_asteptat": "se obtine xx0/a2 - yy0/b2 = 1 pentru ecuatia tangentei in punctul M0(x0, y0) al hiperbolei."
+  },
+  {
+    "intrebare": "Care este definiția parabolei?",
+    "raspuns_asteptat": "Se numeste parabola locul geometric al punctelor din plan care sunt egal departate de o dreapta fixa, numita directoare si de un punct fix F, numit focar."
+  },
+  {
+    "intrebare": "Care este ecuația canonică a parabolei?",
+    "raspuns_asteptat": "y2 = 2px: (5.3.3) Ecuatia (5.3.3) se numeste ecuatia canonica a parabolei de parametru p."
+  },
+  {
+    "intrebare": "Care este ecuația tangentei la parabolă într-un punct?",
+    "raspuns_asteptat": "ecuatia tangentei este: p(x - x0) + y0(y - y0) = 0 sau yy0 = p(x + x0)."
+  },
+  {
+    "intrebare": "Care este ecuația unui elipsoid?",
+    "raspuns_asteptat": "Un elipsoid este o suprafata de ecuatie x2/a2 + y2/b2 + z2/c2 = 1."
+  },
+  {
+    "intrebare": "Care este ecuația conului de gradul al doilea?",
+    "raspuns_asteptat": "Se numeste con de gradul al doilea multimea punctelor din spatiu ale caror coordonate relative la un sistem ortonormat verifica o ecuatie de forma x2/a2 + y2/b2 - z2/c2 = 0."
+  },
+  {
+    "intrebare": "Care este ecuația hiperboloidului cu o pânză?",
+    "raspuns_asteptat": "Se numeste hiperboloid cu o panza locul geometric al punctelor din spatiu ale caror coordonate relativ la un sistem rectangular verifica ecuatia x2/a2 + y2/b2 - z2/c2 = 1."
+  },
+  {
+    "intrebare": "Ce este o transformare geometrică?",
+    "raspuns_asteptat": "Se numeste transformare geometrica o aplicatie care asociaza fiecarui punct M al spatiului un punct M' determinat dupa o anumita lege."
+  },
+  {
+    "intrebare": "Ce este o translație în geometrie?",
+    "raspuns_asteptat": "Translatia de vector a este transformarea geometrica ce asociaza fiecarui punct M punctul M' astfel incat vectorul MM' = a."
+  },
+  {
+    "intrebare": "Care este ecuația translației unui punct în plan?",
+    "raspuns_asteptat": "Daca punctul M are coordonatele (x, y) si se aplica o translatie de vector a = (a1, a2), atunci imaginea M' are coordonatele x' = x + a1, y' = y + a2."
+  },
+  {
+    "intrebare": "Cum se definește rotația în jurul originii în plan?",
+    "raspuns_asteptat": "Rotația de unghi α în jurul originii O este transformarea care asociază fiecărui punct M(x, y) punctul M'(x', y') cu x' = x cos α - y sin α, y' = x sin α + y cos α."
+  },
+  {
+    "intrebare": "Care este matricea rotației în jurul axei Oz?",
+    "raspuns_asteptat": "Matricea rotației de unghi φ în jurul axei Oz este: Rz(φ) = [[cos φ, -sin φ, 0], [sin φ, cos φ, 0], [0, 0, 1]]."
+  },
+  {
+    "intrebare": "Cum se definește simetria față de o dreaptă în plan?",
+    "raspuns_asteptat": "Simetria față de o dreaptă d este transformarea care asociază fiecărui punct M punctul M' astfel încât d este mediatoarea segmentului [MM’]."
+  },
+  {
+    "intrebare": "Cum se definește simetria față de un plan?",
+    "raspuns_asteptat": "Simetria față de un plan α este transformarea care asociază fiecărui punct M punctul M’ astfel încât planul α este planul mediatoare al segmentului [MM’]."
+  },
+  {
+    "intrebare": "Cum se definește omotetia (scalarea) de centru O și raport k?",
+    "raspuns_asteptat": "Omotetia de centru O și raport k este transformarea care asociază fiecărui punct M punctul M' situat pe semidreapta OM astfel încât OM' = k * OM."
+  },
+  {
+    "intrebare": "Care este ecuația omotetiei în coordonate carteziene?",
+    "raspuns_asteptat": "Dacă punctul M(x, y, z) se transformă printr-o omotetie de centru O(x0, y0, z0) și raport k, atunci coordonatele imaginii sunt x' = x0 + k(x - x0), y' = y0 + k(y - y0), z' = z0 + k(z - z0)."
+  },
+  {
+    "intrebare": "Ce este o reflexie față de axa Ox?",
+    "raspuns_asteptat": "Reflexia față de axa Ox este transformarea care lasă neschimbate coordonatele abscisei și schimbă semnul ordonatei: (x', y') = (x, -y)."
+  },
+  {
+    "intrebare": "Ce este o reflexie față de axa Oy?",
+    "raspuns_asteptat": "Reflexia față de axa Oy este transformarea care schimbă semnul abscisei și păstrează ordonata: (x', y') = (-x, y)."
+  },
+  {
+    "intrebare": "Care este definiția unei forfecări (shear)?",
+    "raspuns_asteptat": "Forfecarea este transformarea care deplasează punctele proporțional cu una dintre coordonate, menținând o direcție fixă neschimbată."
+  },
+  {
+    "intrebare": "Care este matricea unei forfecări orizontale în plan?",
+    "raspuns_asteptat": "Matricea unei forfecări orizontale este: Shx(k) = [[1, k], [0, 1]]."
+  },
+  {
+    "intrebare": "Care este matricea unei forfecări verticale în plan?",
+    "raspuns_asteptat": "Matricea unei forfecări verticale este: Shy(k) = [[1, 0], [k, 1]]."
+  },
+  {
+    "intrebare": "Cum se compune o rotație urmată de o translație?",
+    "raspuns_asteptat": "O rotație urmată de o translație este o transformare afină reprezentată de o matrice de rotație urmată de un vector de translație aplicat coordonatelor punctului."
+  },
+  {
+    "intrebare": "Ce este o transformare afină?",
+    "raspuns_asteptat": "Transformarea afină este transformarea geometrică ce păstrează coliniaritatea punctelor și raporturile distanțelor pe drepte paralele."
+  },
+  {
+    "intrebare": "Ce este un sistem de coordonate carteziene?",
+    "raspuns_asteptat": "Un sistem de coordonate carteziene este format dintr-un punct fix O și trei axe perpendiculare între ele, notate Ox, Oy, Oz."
+  },
+  {
+    "intrebare": "Cum sunt definite coordonatele polare ale unui punct în plan?",
+    "raspuns_asteptat": "Coordonatele polare ale unui punct M sunt perechea (ρ, θ) unde ρ este distanța de la origine, iar θ unghiul făcut cu axa Ox pozitivă."
+  },
+  {
+    "intrebare": "Care este relația dintre coordonatele polare și cele carteziene?",
+    "raspuns_asteptat": "Transformarea între coordonatele polare și cele carteziene este dată de x = ρ cos θ, y = ρ sin θ."
+  },
+  {
+    "intrebare": "Cum se definesc coordonatele cilindrice ale unui punct?",
+    "raspuns_asteptat": "Coordonatele cilindrice ale unui punct M sunt (ρ, θ, z) unde (ρ, θ) sunt coordonatele polare ale proiecției punctului pe planul xOy și z este coordonata pe axa Oz."
+  },
+  {
+    "intrebare": "Care sunt formulele de trecere din coordonate cilindrice în carteziene?",
+    "raspuns_asteptat": "x = ρ cos θ, y = ρ sin θ, z = z."
+  },
+  {
+    "intrebare": "Cum se definesc coordonatele sferice ale unui punct?",
+    "raspuns_asteptat": "Coordonatele sferice ale unui punct M sunt (ρ, θ, φ), unde ρ este distanța de la origine, θ este unghiul dintre proiecția pe planul xOy și axa Ox, iar φ este unghiul cu axa Oz."
+  },
+  {
+    "intrebare": "Care sunt formulele de trecere din coordonate sferice în carteziene?",
+    "raspuns_asteptat": "x = ρ sin φ cos θ, y = ρ sin φ sin θ, z = ρ cos φ."
+  },
+  {
+    "intrebare": "Cum se definesc fasciculele de drepte?",
+    "raspuns_asteptat": "Se numește fascicul de drepte mulțimea tuturor dreptei din plan care trec printr-un punct fix numit centrul fasciculului."
+  },
+  {
+    "intrebare": "Cum se definesc fasciculele de plane?",
+    "raspuns_asteptat": "Se numește fascicul de plane mulțimea planurilor care conțin o dreaptă fixă comună, numită axa fasciculului."
+  },
+  {
+    "intrebare": "Cum se scrie ecuația unui fascicul de plane?",
+    "raspuns_asteptat": "Ecuația generală a unui fascicul de plane este dată de forma: α(Ax + By + Cz + D) + β(A'x + B'y + C'z + D') = 0."
+  },
+  {
+    "intrebare": "Cum se definește un snop de drepte?",
+    "raspuns_asteptat": "Snopul de drepte este mulțimea dreptei situate într-un plan, concurente într-un punct fix sau paralele între ele."
+  },
+  {
+    "intrebare": "Care sunt pozițiile relative ale unei drepte față de un plan?",
+    "raspuns_asteptat": "O dreaptă și un plan pot fi incidente (au un punct comun), paralele (nu se intersectează), sau conținute una în alta."
+  },
+  {
+    "intrebare": "Cum se definește distanța de la un punct la o dreaptă în spațiu?",
+    "raspuns_asteptat": "Distanța de la un punct M la o dreaptă Δ este lungimea perpendicularei dusă din M pe Δ."
+  },
+  {
+    "intrebare": "Ce este o suprafață de rotație?",
+    "raspuns_asteptat": "O suprafață de rotație se obține prin rotirea unei curbe plane în jurul unei axe fixe din planul acelei curbe."
+  },
+  {
+    "intrebare": "Cum se definește o sferă?",
+    "raspuns_asteptat": "Se numește sferă locul geometric al punctelor din spațiu situate la o distanță constantă R de un punct fix O, numit centru."
+  },
+  {
+    "intrebare": "Care este ecuația sferei de centru O(x0, y0, z0) și rază R?",
+    "raspuns_asteptat": "(x - x0)^2 + (y - y0)^2 + (z - z0)^2 = R^2."
+  },
+  {
+    "intrebare": "Ce este un cilindru circular drept?",
+    "raspuns_asteptat": "Cilindrul circular drept este suprafața generată de o dreaptă care se deplasează paralel cu ea însăși, trecând printr-o curbă cerc de bază."
+  },
+  {
+    "intrebare": "Care este ecuația unui cilindru circular drept de axă Oz?",
+    "raspuns_asteptat": "Ecuația unui cilindru circular drept cu axa Oz este x^2 + y^2 = R^2."
+  },
+  {
+    "intrebare": "Ce este un con de rotație?",
+    "raspuns_asteptat": "Conul de rotație este suprafața obținută prin rotirea unei drepte care trece printr-un punct fix numit vârf și face un unghi constant cu o axă fixă."
+  },
+  {
+    "intrebare": "Care este ecuația canonică a conului de rotație?",
+    "raspuns_asteptat": "x^2 + y^2 = z^2 * tan^2 α."
+  },
+  {
+    "intrebare": "Cum se definește un hiperboloid cu două pânze?",
+    "raspuns_asteptat": "Se numește hiperboloid cu două pânze locul geometric al punctelor care satisfac ecuația x^2/a^2 + y^2/b^2 - z^2/c^2 = -1."
+  },
+  {
+    "intrebare": "Cum se definește un paraboloid eliptic?",
+    "raspuns_asteptat": "Paraboloidul eliptic este suprafața de ecuație x^2/a^2 + y^2/b^2 = 2pz."
+  },
+  {
+    "intrebare": "Cum se definește un paraboloid hiperbolic?",
+    "raspuns_asteptat": "Paraboloidul hiperbolic este suprafața de ecuație x^2/a^2 - y^2/b^2 = 2pz."
+  },
+  {
+    "intrebare": "Ce este o quadrică?",
+    "raspuns_asteptat": "Quadricile sunt suprafețe de gradul al doilea, adică locuri geometrice ale punctelor ale căror coordonate verifică o ecuație polinomială de gradul doi în x, y, z."
+  },
+  {
+    "intrebare": "Care este forma generală a ecuației unei quadrici?",
+    "raspuns_asteptat": "Forma generală a unei quadrici este: Ax^2 + By^2 + Cz^2 + 2Dyz + 2Ezx + 2Fxy + 2Gx + 2Hy + 2Iz + J = 0."
+  },
+  {
+    "intrebare": "Ce este o elipsoidă de rotație?",
+    "raspuns_asteptat": "Elipsoida de rotație este suprafața obținută prin rotirea unei elipse în jurul unei axe a sale."
+  },
+  {
+    "intrebare": "Ce este o suprafață cilindrică?",
+    "raspuns_asteptat": "O suprafață cilindrică este locul geometric al dreptei paralele cu o direcție fixă și care intersectează o curbă dată numită directrică."
+  },
+  {
+    "intrebare": "Ce este o suprafață conică?",
+    "raspuns_asteptat": "O suprafață conică este locul geometric al dreptei care trec printr-un punct fix numit vârf și care intersectează o curbă dată numită directrică."
+  },
+  {
+    "intrebare": "Ce este o proiecție ortogonală?",
+    "raspuns_asteptat": "Proiecția ortogonală a unui punct pe o dreaptă sau pe un plan este piciorul perpendicularei coborâte din acel punct pe dreapta sau planul respectiv."
+  },
+  {
+    "intrebare": "Ce proprietăți are o proiecție ortogonală?",
+    "raspuns_asteptat": "Proiecția ortogonală păstrează lungimile pe direcțiile perpendiculare și transformă unghiurile drepte în unghiuri drepte."
+  },
+  {
+    "intrebare": "Ce este o proiecție paralelă?",
+    "raspuns_asteptat": "Proiecția paralelă este transformarea care asociază fiecărui punct M punctul M’ determinat de o direcție fixă, astfel încât MM’ este paralel cu direcția dată."
+  },
+  {
+    "intrebare": "Ce este o izometrie?",
+    "raspuns_asteptat": "O izometrie este o transformare geometrică care păstrează distanțele dintre puncte."
+  },
+  {
+    "intrebare": "Cum se definește noțiunea de punct în geometria vectorială?",
+    "raspuns_asteptat": "În geometria vectorială, punctul este considerat elementul fundamental al spațiului, fără dimensiuni proprii, iar toate celelalte concepte geometrice — precum drepte, plane sau vectori de poziție — se construiesc prin relații între puncte, cum ar fi segmentul orientat care leagă două puncte distincte."
+  },
+  {
+    "intrebare": "Ce reprezintă un segment orientat și cum se obține acesta din două puncte?",
+    "raspuns_asteptat": "Un segment orientat se obține asociind o origine și o extremitate unui segment obișnuit, astfel încât sensul să fie determinat. Astfel, pentru două puncte A și B, segmentul orientat AB este determinat prin alegerea lui A ca origine și B ca extremitate, permițând definirea direcției și sensului mișcării de la A la B."
+  },
+  {
+    "intrebare": "Cum se caracterizează vectorii liberi din punct de vedere al echivalenței?",
+    "raspuns_asteptat": "Vectorii liberi se definesc ca familii de segmente orientate echivalente între ele, unde echivalența este dată de egalitatea direcției, a sensului și a modulului. Astfel, doi vectori liberi sunt considerați identici dacă pot fi obținuți unul din altul printr-o translație paralelă fără schimbarea acestor proprietăți."
+  },
+  {
+    "intrebare": "Ce înseamnă echipolența a două segmente orientate?",
+    "raspuns_asteptat": "Două segmente orientate sunt echipolente atunci când au aceeași direcție, același sens și același modul. Aceasta înseamnă că ele pot fi suprapuse printr-o translație paralelă fără a modifica orientarea și lungimea lor."
+  },
+  {
+    "intrebare": "Cum se definește vectorul de poziție al unui punct?",
+    "raspuns_asteptat": "Vectorul de poziție al unui punct A se definește ca vectorul orientat OA, unde O este un punct fix numit origine. Acest vector servește la exprimarea poziției lui A în raport cu sistemul de referință ales."
+  },
+  {
+    "intrebare": "Cum se interpretează geometric egalitatea a doi vectori liberi?",
+    "raspuns_asteptat": "Geometric, egalitatea a doi vectori liberi înseamnă că aceștia pot fi suprapuşi perfect prin translație, având aceleași caracteristici de direcție, sens și modul, chiar dacă pozițiile lor inițiale în spațiu sunt diferite."
+  },
+  {
+    "intrebare": "Care este regula triunghiului pentru adunarea vectorilor?",
+    "raspuns_asteptat": "Regula triunghiului afirmă că suma vectorilor a și b se obține construind vectorul care unește originea lui a cu extremitatea lui b, după ce b este plasat cu originea în extremitatea lui a, alcătuind astfel un triunghi orientat."
+  },
+  {
+    "intrebare": "Cum se explică regula paralelogramului pentru adunarea vectorilor?",
+    "raspuns_asteptat": "Pentru vectorii a și b plasați cu aceeași origine, suma lor este reprezentată de diagonala paralelogramului format prin translația fiecăruia în direcția celuilalt. Această diagonală corespunde efectului combinat al celor două deplasări."
+  },
+  {
+    "intrebare": "Cum se caracterizează înmulțirea unui vector cu un scalar?",
+    "raspuns_asteptat": "Produsul λa dintre un scalar real λ și un vector a produce un vector coliniar cu a, al cărui modul este mărit sau micșorat proporțional cu |λ|, iar sensul său coincide cu al lui a pentru λ pozitiv și este invers pentru λ negativ."
+  },
+  {
+    "intrebare": "Ce reprezintă combinația liniară a unor vectori?",
+    "raspuns_asteptat": "O combinație liniară a vectorilor a₁, a₂, ..., aₖ este un vector obținut prin înmulțirea fiecărui vector cu un scalar și apoi adunarea rezultatelor, permițând descrierea unor vectori noi ca îmbinări ale unor direcții și lungimi deja cunoscute."
+  },
+  {
+    "intrebare": "Cum se definește dependența liniară a unui sistem de vectori?",
+    "raspuns_asteptat": "Un sistem de vectori este liniar dependent atunci când există o combinaţie liniară ne-trivială (adică nu toate coeficiente zero) care produce vectorul nul, ceea ce semnifică faptul că cel puțin unul dintre vectori poate fi exprimat ca sumă liniară a celorlalți."
+  },
+  {
+    "intrebare": "Cum se interpretează geometric dependența liniară a doi vectori?",
+    "raspuns_asteptat": "Doi vectori sunt liniar dependenți atunci când sunt coliniari, ceea ce înseamnă că au aceeași direcție și pot fi obținuți unul din altul prin înmulțirea cu un scalar real."
+  },
+  {
+    "intrebare": "Cum se interpretează geometric dependența liniară a trei vectori?",
+    "raspuns_asteptat": "Trei vectori sunt liniar dependenți dacă pot fi cuprinși într-un același plan, adică sunt coplanari, ceea ce înseamnă că unul dintre ei poate fi construit ca o combinație liniară a celorlalți doi."
+  },
+  {
+    "intrebare": "Ce este produsul scalar al doi vectori și cum se interpretează geometric?",
+    "raspuns_asteptat": "Produsul scalar este o aplicație care asociază doi vectori unui număr real egal cu produsul modulelor lor și cosinusul unghiului dintre ei, reflectând atât proporția dintre direcțiile lor, cât și influența unghiului pe care îl formează."
+  },
+  {
+    "intrebare": "Cum se calculează produsul scalar în coordonate carteziene?",
+    "raspuns_asteptat": "Pentru vectorii a = (a₁, a₂, a₃) și b = (b₁, b₂, b₃), produsul scalar este a·b = a₁b₁ + a₂b₂ + a₃b₃, ceea ce permite determinarea unghiului dintre vectori prin raportarea acestei sume la modulul fiecăruia."
+  },
+  {
+    "intrebare": "Cum se caracterizează perpendicularitatea vectorilor prin produsul scalar?",
+    "raspuns_asteptat": "Doi vectori sunt perpendiculari dacă produsul lor scalar este zero, deoarece cosinusul unghiului dintre ei este zero pentru un unghi de 90°, ceea ce indică absența oricărei componente a unuia în direcția celuilalt."
+  },
+  {
+    "intrebare": "Cum se definește produsul vectorial a doi vectori?",
+    "raspuns_asteptat": "Produsul vectorial este un vector perpendicular pe planul determinat de vectorii inițiali, având modulul egal cu aria paralelogramului construit pe aceștia și sensul stabilit prin regula tripletului direct."
+  },
+  {
+    "intrebare": "Cum se exprimă produsul vectorial în coordonate?",
+    "raspuns_asteptat": "Pentru vectorii a = (a₁, a₂, a₃) și b = (b₁, b₂, b₃), produsul vectorial se exprimă ca determinantul formal cu vectorii unitari i, j, k pe primul rând și componentele vectorilor pe următoarele două rânduri, rezultând un vector perpendicular pe ambii."
+  },
+  {
+    "intrebare": "Cum se poate verifica dacă doi vectori sunt coliniari folosind produsul vectorial?",
+    "raspuns_asteptat": "Doi vectori sunt coliniari dacă produsul lor vectorial este vectorul nul, ceea ce indică faptul că aria paralelogramului construit pe ei este zero și că nu pot genera un plan."
+  },
+  {
+    "intrebare": "Ce reprezintă produsul mixt al trei vectori?",
+    "raspuns_asteptat": "Produsul mixt combină produsul vectorial al primilor doi vectori cu produsul scalar dintre acesta și cel de-al treilea, rezultând un număr real ce măsoară volumul orientat al paralelipipedului determinat de cei trei vectori."
+  },
+  {
+    "intrebare": "Cum se determină volumul paralelipipedului folosind produsul mixt?",
+    "raspuns_asteptat": "Volumul paralelipipedului generat de vectorii a, b și c este dat de modulul produsului mixt |(a, b, c)|, ceea ce arată cât spațiu ocupă figura tridimensională determinată de aceștia."
+  },
+  {
+    "intrebare": "Cum se definește ecuatia vectorială a dreptei în spațiu?",
+    "raspuns_asteptat": "Ecuația vectorială a unei drepte este de forma r = r₀ + t·a, unde r reprezintă vectorul de poziție al unui punct general al dreptei, r₀ este vectorul de poziție al unui punct fix de pe dreaptă, iar a este vectorul director."
+  },
+  {
+    "intrebare": "Cum se caracterizează geometric vectorul director al unei drepte?",
+    "raspuns_asteptat": "Vectorul director este vectorul care dă direcția dreptei, indicând în ce sens se deplasează punctele de pe aceasta; orice multiplă nenulă a vectorului director descrie aceeași direcție."
+  },
+  {
+    "intrebare": "Ce reprezintă systemul de ecuații parametrice ale dreptei?",
+    "raspuns_asteptat": "Ecuațiile parametrice exprimă fiecare coordonată a unui punct de pe dreaptă în funcție de un parametru t, evidențiind cum se deplasează punctul de-a lungul dreptei pe direcția vectorului director."
+  },
+  {
+    "intrebare": "Cum se exprimă ecuația canonică a dreptei în spațiu și de ce este utilă această formă?",
+    "raspuns_asteptat": "Ecuația canonică a dreptei se exprimă prin raportul (x - x0)/l = (y - y0)/m = (z - z0)/n, unde (l, m, n) sunt componentele vectorului director. Această formă este utilă deoarece pune în evidență direcția dreptei și arată clar cum se deplasează punctele în funcție de proporțiile direcției date."
+  },
+  {
+    "intrebare": "Cum se poate determina planul care trece prin trei puncte necoliniare?",
+    "raspuns_asteptat": "Pentru trei puncte A, B și C, necoliniare, planul poate fi determinat construind doi vectori direcție AB și AC, apoi găsind un vector normal ca produs vectorial al acestora. Ecuația planului se obține apoi folosind vectorul normal și unul dintre puncte."
+  },
+  {
+    "intrebare": "Cum se caracterizează vectorul normal al unui plan și ce rol are acesta în ecuația planului?",
+    "raspuns_asteptat": "Vectorul normal este perpendicular pe întreg planul și are rolul de a determina orientarea acestuia în spațiu. În ecuația generală Ax + By + Cz + D = 0, coeficienții A, B și C reprezintă chiar componentele vectorului normal."
+  },
+  {
+    "intrebare": "Ce reprezintă ecuația generală a unui plan și cum se interpretează coeficienții ei?",
+    "raspuns_asteptat": "Ecuația generală Ax + By + Cz + D = 0 reprezintă toate punctele din spațiu care satisfac o relație liniară între coordonate. Coeficienții A, B și C formează vectorul normal, iar D controlează poziția planului față de origine."
+  },
+  {
+    "intrebare": "Cum se determină unghiul dintre două plane folosind vectorii lor normali?",
+    "raspuns_asteptat": "Unghiul dintre două plane este egal cu unghiul dintre vectorii lor normali. Cosinusul acestui unghi se calculează ca produs scalar între vectorii normali împărțit la produsul modulelor acestora."
+  },
+  {
+    "intrebare": "Cum se calculează distanța dintre două plane paralele folosind ecuațiile lor generale?",
+    "raspuns_asteptat": "Dacă planele au aceeași normală și sunt date prin A x + B y + C z + D1 = 0 și A x + B y + C z + D2 = 0, distanța dintre ele este |D2 - D1| împărțit la rădăcina pătrată din A² + B² + C², reflectând separarea lor perpendiculară."
+  },
+  {
+    "intrebare": "Cum se determină relația de perpendicularitate dintre o dreaptă și un plan?",
+    "raspuns_asteptat": "O dreaptă este perpendiculară pe un plan dacă vectorul ei director este coliniar cu vectorul normal al planului, ceea ce înseamnă că direcția dreptei coincide cu direcția normei planului."
+  },
+  {
+    "intrebare": "Cum se stabilește dacă o dreaptă este paralelă cu un plan?",
+    "raspuns_asteptat": "Dreapta este paralelă cu planul atunci când vectorul director al dreptei este perpendicular pe vectorul normal al planului, deci produsul scalar dintre aceștia este nul."
+  },
+  {
+    "intrebare": "Cum se poate determina intersecția unei drepte cu un plan?",
+    "raspuns_asteptat": "Intersecția se determină introducând coordonatele parametrice ale dreptei în ecuația planului și rezolvând pentru parametru; valoarea obținută indică poziția punctului de intersecție."
+  },
+  {
+    "intrebare": "Cum se calculează distanța dintre un punct și un plan folosind ecuația generală a planului?",
+    "raspuns_asteptat": "Distanța se calculează cu formula |Ax0 + By0 + Cz0 + D| / √(A² + B² + C²), unde (x0, y0, z0) sunt coordonatele punctului. Aceasta reprezintă distanța pe direcția normalului planului."
+  },
+  {
+    "intrebare": "Cum se definește proiecția ortogonală a unui punct pe un plan?",
+    "raspuns_asteptat": "Proiecția ortogonală a unui punct pe un plan este punctul din plan care se obține coborând perpendiculara din punct pe plan. Acesta minimizează distanța dintre punct și toate punctele planului."
+  },
+  {
+    "intrebare": "Cum se determină proiecția ortogonală a unui vector pe un alt vector?",
+    "raspuns_asteptat": "Proiecția vectorului a pe vectorul b este vectorul obținut prin înmulțirea lui b cu raportul dintre produsul scalar a·b și modulul pătrat al lui b, reprezentând componenta lui a în direcția lui b."
+  },
+  {
+    "intrebare": "Cum se poate verifica perpendicularitatea dintre două plane folosind ecuațiile generale?",
+    "raspuns_asteptat": "Perpendicularitatea se verifică calculând produsul scalar al vectorilor lor normali. Dacă produsul este zero, planele sunt perpendiculare deoarece normalele lor formează un unghi drept."
+  },
+  {
+    "intrebare": "Cum se caracterizează intersecția a două plane care nu sunt paralele?",
+    "raspuns_asteptat": "Intersecția a două plane neparalele este întotdeauna o dreaptă, determinată de soluțiile comune ale ecuațiilor lor generale. Direcția acestei drepte este perpendiculară pe ambii vectori normali."
+  },
+  {
+    "intrebare": "Cum se determină unghiul dintre o dreaptă și un plan?",
+    "raspuns_asteptat": "Unghiul dintre o dreaptă și un plan este complementul unghiului dintre vectorul director al dreptei și vectorul normal al planului, fiind dat prin formula sin φ = |a·n| / (||a|| ||n||)."
+  },
+  {
+    "intrebare": "De ce se folosește produsul vectorial pentru a determina aria unui paralelogram?",
+    "raspuns_asteptat": "Produsul vectorial produce un vector al cărui modul reprezintă exact aria paralelogramului generat de cei doi vectori, deoarece combină modulul și sinusul unghiului dintre ei, caracteristici care determină lățimea și lungimea paralelogramului."
+  },
+  {
+    "intrebare": "Cum se poate testa coplanaritatea a trei vectori prin produsul mixt?",
+    "raspuns_asteptat": "Trei vectori sunt coplanari dacă produsul lor mixt este zero, deoarece volumul paralelipipedului pe care îl definesc este nul, ceea ce indică faptul că toți se află în același plan."
+  },
+  {
+    "intrebare": "Ce reprezintă produsul mixt în legătură cu orientarea spațială a vectorilor?",
+    "raspuns_asteptat": "Produsul mixt este pozitiv sau negativ în funcție de orientarea tripletului de vectori, reflectând ordinea lor în spațiu și indicând dacă aceștia formează un sistem direct sau invers."
+  },
+  {
+    "intrebare": "Cum se definește ecuația unui fascicul de plane?",
+    "raspuns_asteptat": "Ecuația unui fascicul de plane se exprimă ca combinație liniară între două plane distincte: αP1 + βP2 = 0, ceea ce descrie toate planele care conțin intersecția comună a celor două plane inițiale."
+  },
+  {
+    "intrebare": "Ce reprezintă condiția de paralelism a două plane în ecuația lor generală?",
+    "raspuns_asteptat": "Două plane sunt paralele dacă vectorii lor normali sunt coliniari, ceea ce se exprimă prin egalitatea rapoartelor A1/A2 = B1/B2 = C1/C2, garantând orientări identice ale normalelor."
+  },
+  {
+    "intrebare": "Cum se poate testa dacă o dreaptă este conținută într-un plan?",
+    "raspuns_asteptat": "O dreaptă este conținută într-un plan dacă vectorul ei director este perpendicular pe vectorul normal al planului și dacă un punct al dreptei satisface ecuația planului."
+  },
+  {
+    "intrebare": "Cum se stabilește dacă două drepte din spațiu sunt paralele?",
+    "raspuns_asteptat": "Două drepte sunt paralele dacă vectorii lor directori sunt coliniari, ceea ce indică faptul că direcția lor este aceeași sau una este obținută prin scalarea celeilalte."
+  },
+  {
+    "intrebare": "Cum se determină dacă două drepte sunt perpendiculare în spațiu?",
+    "raspuns_asteptat": "Două drepte sunt perpendiculare dacă produsul scalar dintre vectorii lor directori este zero, ceea ce indică faptul că direcțiile lor formează un unghi drept."
+  },
+  {
+    "intrebare": "Cum se caracterizează o dreaptă în spațiu prin intermediul ecuațiilor parametrică și canonică?",
+    "raspuns_asteptat": "O dreaptă în spațiu poate fi descrisă parametric prin expresiile x = x0 + lt, y = y0 + mt și z = z0 + nt, care arată cum un punct general al dreptei se deplasează în funcție de parametru. Ecuația canonică elimină parametrul și exprimă proporționalitatea dintre diferențele coordonatelor și componentele vectorului director, evidențiind faptul că toate punctele respectă aceleași rapoarte de creștere."
+  },
+  {
+    "intrebare": "Cum se poate afla un vector normal la un plan folosind doi vectori directori determinați de puncte din plan?",
+    "raspuns_asteptat": "Dacă din plan putem determina doi vectori directori necoliniari, vectorii diferență dintre perechi de puncte din plan, atunci produsul lor vectorial va produce un vector perpendicular pe întreg planul, acesta fiind vectorul normal necesar în formularea ecuației generale."
+  },
+  {
+    "intrebare": "Cum se interpretează geometric distanța dintre un punct și un plan?",
+    "raspuns_asteptat": "Această distanță reprezintă lungimea segmentului perpendicular dus din punct pe plan, explicând cât de departe se află punctul pe direcția normalului planului. Aceasta nu depinde de poziția particulară a punctului, ci doar de cea mai scurtă legătură dintre el și plan."
+  },
+  {
+    "intrebare": "Ce semnificație geometrică are direcția unei drepte reprezentată de vectorul său director?",
+    "raspuns_asteptat": "Direcția unei drepte indică orientarea acesteia în spațiu și este determinată de vectorul director, care arată în ce sens variază coordonatele punctelor de pe dreaptă. Orice multiplă nenulă a acestui vector descrie aceeași orientare geometrică."
+  },
+  {
+    "intrebare": "Cum se formulează condiția ca două drepte în spațiu să fie concurente?",
+    "raspuns_asteptat": "Două drepte sunt concurente dacă există un punct care satisface simultan ecuațiile lor parametrice. Aceasta implică găsirea a doi parametri care fac coordonatele ambelor drepte identice, confirmând existența unui punct comun."
+  },
+  {
+    "intrebare": "În ce situație două drepte din spațiu sunt numite 'strâmbe' (skew)?",
+    "raspuns_asteptat": "Două drepte sunt strâmbe dacă nu sunt nici paralele, nici concurente, ceea ce înseamnă că nu se intersectează și nu au aceeași direcție. Acestea se află în planuri paralele distincte sau în spațiu fără a aparține unui același plan comun."
+  },
+  {
+    "intrebare": "Cum se poate determina distanța dintre două drepte paralele în spațiu?",
+    "raspuns_asteptat": "Distanța dintre două drepte paralele se determină considerând un punct de pe una dintre drepte și calculând distanța de la acest punct la cealaltă dreaptă, deoarece această distanță rămâne constantă pe întreaga lor lungime."
+  },
+  {
+    "intrebare": "Cum se caracterizează intersecția dintre o dreaptă și un plan într-un singur punct?",
+    "raspuns_asteptat": "O dreaptă intersectează un plan într-un singur punct atunci când vectorul director al dreptei nu este perpendicular pe vectorul normal al planului, ceea ce garantează că direcția dreptei nu este paralelă cu planul."
+  },
+  {
+    "intrebare": "Cum se deduce unghiul dintre două drepte în spațiu folosind produsul scalar?",
+    "raspuns_asteptat": "Unghiul dintre două drepte este definit ca unghiul dintre vectorii lor directori. Cosinusul acestui unghi se calculează prin formula (a·b)/(||a||·||b||), ceea ce reflectă cât de apropiate sunt direcțiile celor două drepte."
+  },
+  {
+    "intrebare": "Cum se stabilește dacă două plane sunt coincidente?",
+    "raspuns_asteptat": "Două plane sunt coincidente dacă coeficienții lor A, B și C sunt proporționali, având același vector normal, iar termenii lor liberi mențin raportul necesar astfel încât toate punctele care aparțin unuia să aparțină și celuilalt."
+  },
+  {
+    "intrebare": "Cum se interpretează grafic ecuația unui plan scrisă în forma prin tăieturi?",
+    "raspuns_asteptat": "Forma prin tăieturi, x/a + y/b + z/c = 1, arată că planul intersectează axele coordonatelor în punctele (a, 0, 0), (0, b, 0) și (0, 0, c). Aceste tăieturi indică locurile în care planul se întâlnește cu axele și oferă o reprezentare geometrică clară."
+  },
+  {
+    "intrebare": "Cum se poate reprezenta direcția intersecției dintre două plane?",
+    "raspuns_asteptat": "Direcția intersecției este dată de produsul vectorial dintre vectorii normali ai celor două plane, deoarece acesta este întotdeauna perpendicular pe ambii normali și, prin urmare, paralel cu linia lor de intersecție."
+  },
+  {
+    "intrebare": "Cum se obține ecuația generală a unui plan pornind de la forma vectorială?",
+    "raspuns_asteptat": "Pornind de la r = r0 + s·v + t·w, se construiește un vector normal ca produs vectorial v×w, apoi se utilizează acest vector pentru a forma expresia Ax + By + Cz + D = 0, unde punctul r0 furnizează termenul liber D."
+  },
+  {
+    "intrebare": "Ce reprezintă în geometrie un sistem de coordonate carteziene?",
+    "raspuns_asteptat": "Un sistem de coordonate carteziene este un cadru de referință format din trei axe perpendiculare Ox, Oy și Oz, care permit localizarea oricărui punct din spațiu prin cele trei coordonate ale sale în raport cu origine."
+  },
+  {
+    "intrebare": "Cum se interpretează un punct în coordonate carteziene din punct de vedere vectorial?",
+    "raspuns_asteptat": "Punctul cu coordonate (x, y, z) este asociat vectorului de poziție x·i + y·j + z·k, ceea ce permite utilizarea operațiilor vectoriale pentru a manipula, compara sau transforma pozițiile punctelor în spațiu."
+  },
+  {
+    "intrebare": "Cum se poate determina ecuația unei drepte dacă ni se cunosc un punct și o direcție?",
+    "raspuns_asteptat": "Dacă un punct A este cunoscut și un vector director v, atunci orice punct M al dreptei se poate scrie în forma r = rA + t·v. Această expresie generează toate punctele situate pe dreaptă pe măsură ce t variază."
+  },
+  {
+    "intrebare": "Cum se caracterizează geometria unei elipse prin distanțele la focare?",
+    "raspuns_asteptat": "O elipsă este formată din toate punctele pentru care suma distanțelor la cele două focare este constantă. Această proprietate implică faptul că oricare punct al elipsei se află într-un echilibru geometric între cele două focare."
+  },
+  {
+    "intrebare": "Ce rol au semiaxele în ecuația canonică a elipsei?",
+    "raspuns_asteptat": "În ecuația x²/a² + y²/b² = 1, valorile a și b reprezintă lungimile semiaxelor și determină întinderea elipsei pe cele două direcții principale; ele reflectă cât de alungită sau turtită este curba."
+  },
+  {
+    "intrebare": "Cum se definește hiperbola prin proprietatea diferenței de distanțe la focare?",
+    "raspuns_asteptat": "Hiperbola este mulțimea punctelor pentru care diferența absolută a distanțelor la focarele F1 și F2 este constantă, acest caracter fiind asociat unei forme deschise, cu două ramuri simetrice."
+  },
+  {
+    "intrebare": "Cum se interpretează geometric parabola definită printr-un focar și o directrică?",
+    "raspuns_asteptat": "Oricare punct al parabolei se află la aceeași distanță față de un punct fix numit focar și față de o dreaptă fixă numită directrică. Această simetrie definește forma caracteristică a parabolei."
+  },
+  {
+    "intrebare": "Cum se construiește ecuația canonică a parabolei orientate pe axa Ox?",
+    "raspuns_asteptat": "Se pornește de la definiția geometrică, se impun egalitățile de distanță dintre punctul M(x, y) și focar, respectiv directrică, și se obține forma y² = 2px, unde p reprezintă distanța dintre focar și directrică."
+  },
+  {
+    "intrebare": "Cum se obține ecuația tangentei la o elipsă într-un punct al acesteia?",
+    "raspuns_asteptat": "Plecând de la ecuația elipsei, înlocuim x²/a² + y²/b² = 1 cu forma dedublată xx0/a² + yy0/b² = 1, ceea ce asigură că linia obținută atinge elipsa exact în punctul M0(x0, y0)."
+  },
+  {
+    "intrebare": "Cum se deduce ecuația tangentei la o hiperbolă în coordonate carteziene?",
+    "raspuns_asteptat": "Pentru hiperbola de forma x²/a² - y²/b² = 1, ecuația tangentei în punctul M0(x0, y0) se obține prin înlocuirea termenilor pătrați cu forma dedublată xx0/a² - yy0/b² = 1, care reprezintă singura dreaptă ce atinge hiperbola exact în acel punct."
+  },
+  {
+    "intrebare": "Cum se formează ecuația tangentei la o parabolă în punctul M0(x0, y0)?",
+    "raspuns_asteptat": "Pornind de la ecuația parabolei y² = 2px, tangenta se obține folosind forma dedublată yy0 = p(x + x0), care exprimă faptul că numai această dreaptă are același coeficient de variație al poziției ca și curba în punctul de contact."
+  },
+  {
+    "intrebare": "Cum se stabilește direcția asimptotică a unei hiperbole în forma canonică?",
+    "raspuns_asteptat": "Pentru hiperbola x²/a² - y²/b² = 1, direcțiile asimptotice sunt date de ecuațiile x/a = ± y/b, care reprezintă dreptele pe care ramurile hiperbolei le urmează la infinit, ghidând forma generală a curbei."
+  },
+  {
+    "intrebare": "Cum se determină excentricitatea elipsei și ce semnificație geometrică are aceasta?",
+    "raspuns_asteptat": "Excentricitatea elipsei este definită ca raportul e = c/a, unde c este distanța de la centru la focare. Aceasta măsoară cât de alungită este elipsa, valori mai apropiate de 0 indicând forme aproape circulare."
+  },
+  {
+    "intrebare": "Ce rol au focarele în descrierea hiperbolei?",
+    "raspuns_asteptat": "Focarele hiperbolei sunt două puncte fixe față de care diferența distanțelor pentru orice punct al hiperbolei rămâne constantă. Ele determină orientarea și forma ramurilor hiperbolei, explicând deschiderea sa simetrică."
+  },
+  {
+    "intrebare": "Cum este definită parabola în raport cu focarul și directrica?",
+    "raspuns_asteptat": "Parabola este locul geometric al punctelor care sunt la aceeași distanță de un punct fix numit focar și de o dreaptă fixă numită directrică. Această condiție metrică generează curba simetrică caracteristică parabolei."
+  },
+  {
+    "intrebare": "Cum se determină excentricitatea parabolei și ce valoare are aceasta?",
+    "raspuns_asteptat": "Parabola este singura secțiune conică cu excentricitatea e = 1, ceea ce reflectă faptul că distanța față de focar și cea față de directrică sunt mereu egale."
+  },
+  {
+    "intrebare": "Cum se poate distinge geometric între o elipsă și o hiperbolă folosind semiaxele?",
+    "raspuns_asteptat": "La elipsă avem relația a² > c², ceea ce duce la b² = a² - c², pe când la hiperbolă se îndeplinește a² < c², ducând la b² = c² - a². Diferența semnifică modul în care sunt poziționate focarele față de axa principală."
+  },
+  {
+    "intrebare": "Cum se definește sfera în punct de vedere analitic și geometric?",
+    "raspuns_asteptat": "Geometric, sfera este locul geometric al punctelor situate la aceeași distanță R față de un punct fix O. Analitic, aceasta se exprimă prin ecuația (x - x0)² + (y - y0)² + (z - z0)² = R², reprezentând toate punctele aflate la distanța R de centru."
+  },
+  {
+    "intrebare": "Cum se caracterizează elipsoidul în coordonate carteziene?",
+    "raspuns_asteptat": "Elipsoidul este descris prin ecuația x²/a² + y²/b² + z²/c² = 1, reprezentând o suprafață închisă, simetrică față de planurile de coordonate, cu secțiuni plane eliptice."
+  },
+  {
+    "intrebare": "Ce reprezintă hiperboloidul cu o pânză și cum se exprimă ecuația sa?",
+    "raspuns_asteptat": "Hiperboloidul cu o pânză este o suprafață deschisă cu secțiuni eliptice și hiperbice, exprimată prin ecuația x²/a² + y²/b² - z²/c² = 1, având o singură regiune continuă asemănătoare unui tub dublu-curbat."
+  },
+  {
+    "intrebare": "Cum se definește hiperboloidul cu două pânze?",
+    "raspuns_asteptat": "Hiperboloidul cu două pânze este definit prin ecuația -x²/a² - y²/b² + z²/c² = 1, prezentând două regiuni separate situate simetric față de planul xOy și fără conexiune între ele."
+  },
+  {
+    "intrebare": "Cum se interpretează paraboloidul eliptic pe baza ecuației sale canonice?",
+    "raspuns_asteptat": "Ecuația x²/a² + y²/b² = 2pz descrie un paraboloid eliptic, în care secțiunile plane paralele cu axa Oz sunt parabole, iar cele paralele cu planul xOy sunt elipse, reflectând o deschidere graduală către infinit."
+  },
+  {
+    "intrebare": "Cum se descrie paraboloidul hiperbolic și ce formă vizuală caracteristică are acesta?",
+    "raspuns_asteptat": "Paraboloidul hiperbolic este dat de ecuația x²/a² - y²/b² = 2pz și are forma distinctă de „șa”, deoarece secțiunile sale mixte produc parabole în direcții opuse, iar secțiunile plane orizontale sunt hiperbole."
+  },
+  {
+    "intrebare": "Ce este o quadrică și cum se exprimă forma sa generală?",
+    "raspuns_asteptat": "O quadrică este o suprafață de ordinul al doilea în spațiu, descrisă printr-o ecuație polinomială de gradul al doilea în x, y și z. Forma generală cuprinde termeni pătrați, termeni liniari și un termen liber, acoperind toate suprafețele conice și derivatele lor tridimensionale."
+  },
+  {
+    "intrebare": "Cum se poate stabili tipul unei quadrici folosind coeficienții din ecuația sa generală?",
+    "raspuns_asteptat": "Tipul quadricii se determină prin analizarea semnelor și proporțiilor termenilor pătrați din ecuație. Configurația termenilor cu x², y² și z² stabilește dacă quadrică este elipsoid, hiperboloid, con sau paraboloid."
+  },
+  {
+    "intrebare": "Cum se interpretează vectorii normali ai unei quadrici în forma sa generală?",
+    "raspuns_asteptat": "Vectorul gradient ∇Q al funcției Q(x, y, z) asociate quadricii indică direcția normală în orice punct al suprafeței, reflectând modul în care suprafața se înclină sau se curbează local."
+  },
+  {
+    "intrebare": "Cum se definește o translație ca transformare geometrică?",
+    "raspuns_asteptat": "Translația deplasează fiecare punct al spațiului cu același vector, astfel încât segmentul care unește punctul inițial și cel final este echipolent cu vectorul translației. Aceasta păstrează forma și orientarea figurilor."
+  },
+  {
+    "intrebare": "Cum se exprimă translația unui punct în coordonate carteziene?",
+    "raspuns_asteptat": "Dacă punctul M(x, y) este translat cu vectorul a = (a1, a2), noul punct M' are coordonatele x' = x + a1 și y' = y + a2, reflectând simpla adăugare a deplasării pe fiecare axă."
+  },
+  {
+    "intrebare": "Cum se definește rotația în plan și cum afectează aceasta coordonatele unui punct?",
+    "raspuns_asteptat": "Rotația în jurul originii cu unghiul α transformă punctul M(x, y) în M'(x cos α - y sin α, x sin α + y cos α). Această transformare păstrează distanțele față de origine, rotind punctul în mod rigid în jurul acesteia."
+  },
+  {
+    "intrebare": "Cum se caracterizează simetria axială în plan?",
+    "raspuns_asteptat": "Simetria față de o dreaptă transformă fiecare punct în imaginea sa reflectată, astfel încât dreapta de simetrie devine mediatoarea segmentului ce unește punctul inițial cu imaginea lui. Aceasta păstrează distanțele și unghiurile."
+  },
+  {
+    "intrebare": "Cum se definește omotetia și cum influențează aceasta dimensiunea figurilor?",
+    "raspuns_asteptat": "Omotetia este transformarea de centru O și raport k care deplasează fiecare punct M pe semidreapta OM astfel încât distanța față de O se multiplică cu k. Dacă |k| > 1 figura se mărește, iar dacă |k| < 1 se micșorează."
+  },
+  {
+    "intrebare": "Cum se caracterizează forfecarea ca transformare geometrică?",
+    "raspuns_asteptat": "Forfecarea deplasează punctele proporțional cu o coordonată, menținând direcția unei axe fixe. De exemplu, forfecarea orizontală mută punctele în direcția Ox în funcție de valoarea coordonatei y, distorsionând figura fără a modifica aria în mod necesar."
+  }
+]
+
+
+
