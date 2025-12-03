@@ -1,67 +1,125 @@
 import os
-import re
 import time
+import pickle
+import faiss
+import numpy as np
 import subprocess
 from pathlib import Path
-
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.vectorstores import FAISS
 from unidecode import unidecode
-from llama_cpp import Llama 
-from generate_avatar.generate_lip_sync_sadtalker import sadtalker_generate_video
-from generate_avatar.generate_lip_sync_wav2lip import wav2lip_generate_video
+from llama_cpp import Llama
+from sentence_transformers import SentenceTransformer 
+import re
 
+# --- Importuri Avatar (Păstrate) ---
 try:
     from scripts.config import (
         SADTALKER_REPO,
         USER_IMAGE,
         WAV2LIP_REPO
     )
-    # Importăm funcția de TTS a colegului
     from generate_avatar.generate_tts import tts_piper
+    from generate_avatar.generate_lip_sync_wav2lip import wav2lip_generate_video
 except ImportError:
-    print("[WARN] Nu s-au putut importa modulele de Avatar (scripts.config). Se folosesc valori default.")
-    SADTALKER_REPO = "SadTalker"
-    USER_IMAGE = "input_img.jpg"
-  
+    print("[WARN] Nu s-au putut importa modulele de Avatar. Rulăm pe mock.")
+    USER_IMAGE = "input_img.png"
+    WAV2LIP_REPO = "external/Wav2Lip"
+    def tts_piper(text, path): print(f"[MOCK TTS] Se generează audio la {path}...")
+    def wav2lip_generate_video(**kwargs): print("[MOCK VIDEO] Se generează video..."); return "mock.mp4"
 
-# DB_FAISS_PATH = 'vectorstore/'
-DB_FAISS_PATH = 'vectorstoretmp/'
+# --- CONFIGURARE ---
+# Calea trebuie să fie exact cea din create_vector_store.py
+DB_FOLDER_PATH = 'vectorstoretmp/' 
 EMBEDDING_MODEL_NAME = "thenlper/gte-small"
-
 LLM_MODEL_PATH = "./models/Meta-Llama-3-8B-Instruct.Q4_K_M.gguf"
 
+# O clasă simplă care să mimeze structura Document din LangChain
+# (ca să nu modificăm funcția create_prompt)
+class SimpleDoc:
+    def __init__(self, content, source="Manual"):
+        self.page_content = content
+        self.metadata = {'source': source}
 
+# ----------------------------------------------------------
+#            1. RESURSE (Încărcare Manuală)
+# ----------------------------------------------------------
+def load_resources():
+    print(f"[INFO] Se încarcă resursele...")
+    
+    # 1. Încărcăm Indexul FAISS
+    try:
+        index = faiss.read_index(f"{DB_FOLDER_PATH}/index.faiss")
+        print("[SUCCESS] Index FAISS încărcat.")
+    except Exception as e:
+        print(f"[EROARE] Nu am putut citi index.faiss din {DB_FOLDER_PATH}: {e}")
+        return None, None, None
 
+    # 2. Încărcăm Textele (Pickle)
+    try:
+        with open(f"{DB_FOLDER_PATH}/index.pkl", "rb") as f:
+            texts = pickle.load(f)
+        print(f"[SUCCESS] {len(texts)} fragmente de text încărcate.")
+    except Exception as e:
+        print(f"[EROARE] Nu am putut citi index.pkl: {e}")
+        return None, None, None
 
-def load_db():
-    """Încarcă baza de date vectorială FAISS."""
-    print(f"[INFO] Se încarcă baza de date...")
-    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL_NAME, model_kwargs={'device': 'cuda'})
-    db = FAISS.load_local(DB_FAISS_PATH, embeddings, allow_dangerous_deserialization=True)
-    return db
+    # 3. Încărcăm Modelul de Embedding (SentenceTransformer)
+    # Îl punem pe CPU ca să nu ocupe VRAM-ul necesar pentru Llama
+    print(f"[INFO] Se încarcă modelul de embedding {EMBEDDING_MODEL_NAME}...")
+    embed_model = SentenceTransformer(EMBEDDING_MODEL_NAME, device="cuda")
 
-def load_llm():
-    """Încarcă modelul Llama 3 8B folosind llama-cpp-python."""
-    print(f"[INFO] Se încarcă modelul Llama 3 8B din: {LLM_MODEL_PATH}...")
+    # 4. Încărcăm Llama 3 (Pe GPU)
+    print(f"[INFO] Se încarcă Llama 3 8B...")
     try:
         llm = Llama(
             model_path=LLM_MODEL_PATH,
-            n_gpu_layers=-1, 
+            n_gpu_layers=-1, # Totul pe GPU
             n_ctx=4096, 
             verbose=False
         )
-        print("[SUCCESS] Modelul Llama 3 a fost încărcat.")
-        return llm
+        print("[SUCCESS] Llama 3 încărcat pe GPU.")
     except Exception as e:
-        print(f"[EROARE FATALĂ] Nu s-a putut încărca modelul: {e}")
-        return None
+        print(f"[EROARE] Nu s-a putut încărca Llama: {e}")
+        return None, None, None
 
+    return index, texts, embed_model, llm
+
+# ----------------------------------------------------------
+#            2. LOGICA DE RETRIEVAL MANUALĂ
+# ----------------------------------------------------------
+def search_manual(query, index, texts, embed_model, k=4):
+    # 1. Vectorizăm întrebarea
+    query_vec = embed_model.encode([query]).astype("float32")
+    
+    # 2. Căutăm în FAISS
+    distances, indices = index.search(query_vec, k)
+    
+    # 3. Extragem textele corespunzătoare indecșilor găsiți
+    found_docs = []
+    for idx in indices[0]:
+        if 0 <= idx < len(texts):
+            # Creăm un obiect simplu compatibil cu restul codului
+            # (create_vector_store-ul tău păstra doar textul, nu și sursa explicită per chunk,
+            # deci punem o sursă generică sau încercăm să o deducem dacă e în text)
+            content = texts[idx]
+            # Încercare simplă de a extrage titlul dacă e la început (Title: ...)
+            source = "Manual"
+            if content.startswith("Title:"):
+                parts = content.split(":", 2)
+                if len(parts) > 1:
+                    source = parts[1].strip()
+            
+            found_docs.append(SimpleDoc(content, source))
+            
+    return found_docs
+
+# ----------------------------------------------------------
+#            3. RAG & PROMPT (Neschimbat)
+# ----------------------------------------------------------
 def create_prompt(context_docs, query):
-    """Creează promptul 'Tutore AI' structurat."""
     context = "\n\n".join([doc.page_content for doc in context_docs])
     
     prompt_template = f"""
+<|begin_of_text|><|start_header_id|>system<|end_header_id|>
 Ești un Asistent Universitar AI expert, prietenos și răbdător.
 
 INSTRUCȚIUNI STRICTE:
@@ -71,56 +129,38 @@ INSTRUCȚIUNI STRICTE:
    b) **Explicația simplă:** Reformulează pe scurt, "ca pentru studenți", ca să fie ușor de înțeles.
 3. Dacă informația nu există în context, spune sincer: "Nu am găsit această informație în materialele de curs."
 4. Răspunde în limba română.
-
-CONTEXT DIN MANUAL:
----
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+CONTEXT:
 {context}
----
 
 ÎNTREBAREA STUDENTULUI:
 {query}
 
 RĂSPUNSUL TĂU (Structurat):
+<|eot_id|><|start_header_id|>assistant<|end_header_id|>
 """
     return prompt_template
 
 def get_llm_response(prompt, llm_instance):
-    """Trimite promptul către instanța Llama (local)."""
     if llm_instance is None: return None
-    
     try:
-        start_time = time.time()
-        
         output = llm_instance.create_chat_completion(
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.1
+            temperature=0.1,
         )
-        end_time = time.time()
-        
-        # La Llama 3 nu avem nevoie de filtrarea complexă de la GPT-OSS (fără <|channel|>)
-        clean_text = output['choices'][0]['message']['content']
-        
-        print(f"[INFO] Generare text finalizată în {end_time - start_time:.2f} secunde.")
-        return clean_text
-
+        return output['choices'][0]['message']['content'].strip()
     except Exception as e:
-        print(f"[EROARE] Eroare la generarea răspunsului text: {e}")
+        print(f"[EROARE] Eroare la generarea textului: {e}")
         return None
 
-
-
-def generate_avatar_video(answer_text: str):
-    """
-    Pipeline integrat:
-    - generează audio cu Piper (în venv principal)
-    - apelează SadTalker prin Python 3.10 (venv310) pentru lip-sync
-    """
+# ----------------------------------------------------------
+#            4. AVATAR (Video)
+# ----------------------------------------------------------
+def generate_avatar_video_wav2lip(answer_text: str):
     text_for_tts = answer_text.replace("*", "").replace("#", "").replace("a)", "").replace("b)", "")
-
     base_dir = Path(__file__).resolve().parent
-    work_dir = base_dir / "runtime" / "avatar"
+    work_dir = base_dir / "runtime" / "avatar_wav2lip"
     work_dir.mkdir(parents=True, exist_ok=True)
-
     audio_path = work_dir / "answer.wav"
     video_output_dir = work_dir / "video"
     video_output_dir.mkdir(parents=True, exist_ok=True)
@@ -128,150 +168,64 @@ def generate_avatar_video(answer_text: str):
     print("\n[INFO] Generare TTS (Piper)...")
     try:
         tts_piper(text_for_tts, str(audio_path))
-        print(f"[INFO] Audio generat: {audio_path}")
     except Exception as e:
-        print(f"[EROARE TTS] Nu s-a putut genera audio: {e}")
-        return None
-
-    print("\n[INFO] Generare avatar cu SadTalker (Python 3.10)...")
-
-    # python310 = base_dir / "venv310" / "bin" / "python"
-    # run_sadtalker_script = base_dir / "generate_avatar" / "run_sadtalker.py"
-
-    # if not python310.exists():
-    #     print(f"[EROARE] Nu am găsit mediul virtual pentru SadTalker la: {python310}")
-    #     # Continuăm fără video, doar text
-    #     return None
-
-    # cmd = [
-    #     str(python310),
-    #     str(run_sadtalker_script),
-    #     "--image",
-    #     str((base_dir / USER_IMAGE).resolve()) if not Path(USER_IMAGE).is_absolute() else USER_IMAGE,
-    #     "--audio",
-    #     str(audio_path.resolve()),
-    #     "--output",
-    #     str(video_output_dir.resolve()),
-    #     "--repo",
-    #     str((base_dir / SADTALKER_REPO).resolve()) if not Path(SADTALKER_REPO).is_absolute() else SADTALKER_REPO,
-    # ]
-
-    # env = os.environ.copy()
-    # env["PATH"] = f"{base_dir / 'venv310' / 'bin'}:" + env.get("PATH", "")
-
-    try:
-        # subprocess.run(cmd, check=True, env=env)
-        video_path = sadtalker_generate_video(
-                        image_path=str(base_dir / USER_IMAGE),
-            audio_path=str(audio_path),
-            output_dir=str(video_output_dir),
-            sadtalker_repo=str(base_dir / SADTALKER_REPO)
-        )
-    except subprocess.CalledProcessError as e:
-        print(f"[EROARE SADTALKER] Generarea video a eșuat: {e}")
-        return None
-
-    # 3. Caută ultimul .mp4 generat în folderul video
-    mp4_files = list(video_output_dir.glob("*.mp4"))
-    final_video = None
-    if mp4_files:
-        final_video = max(mp4_files, key=lambda p: p.stat().st_mtime)
-
-    if final_video:
-        print(f"\n[SUCCESS] Video generat cu succes: {final_video}")
-    else:
-        print("\n[AVERTISMENT] Nu am găsit niciun .mp4 în folderul video.")
-
-    return final_video
-
-def generate_avatar_video_wav2lip(answer_text: str):
-    """
-    Pipeline alternativ (Wav2Lip):
-    - generează audio cu Piper
-    - creează un video static
-    - aplică Wav2Lip pentru lip-sync
-    """
-    text_for_tts = answer_text.replace("*", "").replace("#", "").replace("a)", "").replace("b)", "")
-
-    base_dir = Path(__file__).resolve().parent
-    work_dir = base_dir / "runtime" / "avatar_wav2lip"
-    work_dir.mkdir(parents=True, exist_ok=True)
-
-    audio_path = work_dir / "answer.wav"
-    video_output_dir = work_dir / "video"
-    video_output_dir.mkdir(parents=True, exist_ok=True)
-
-    print("\n[INFO] Generare TTS (Piper) pentru Wav2Lip...")
-    try:
-        tts_piper(text_for_tts, str(audio_path))
-        print(f"[INFO] Audio generat: {audio_path}")
-    except Exception as e:
-        print(f"[EROARE TTS] Nu s-a generat audio: {e}")
+        print(f"[EROARE TTS] {e}")
         return None
 
     print("\n[INFO] Generare avatar cu Wav2Lip...")
-
     try:
-        video_path = wav2lip_generate_video(
+        wav2lip_generate_video(
             image_path=str(base_dir / USER_IMAGE),
             audio_path=str(audio_path),
             output_dir=str(video_output_dir),
-            wav2lip_repo=str(base_dir / WAV2LIP_REPO)  # sau repo-ul tău exact
+            wav2lip_repo=str(base_dir / WAV2LIP_REPO) 
         )
-    except subprocess.CalledProcessError as e:
-        print(f"[EROARE Wav2Lip] Generarea video a eșuat: {e}")
+    except Exception as e:
+        print(f"[EROARE Wav2Lip] {e}")
         return None
 
-    # găsește ultimul mp4 generat
     mp4_files = list(video_output_dir.glob("*.mp4"))
-    final_video = None
     if mp4_files:
         final_video = max(mp4_files, key=lambda p: p.stat().st_mtime)
-
-    if final_video:
         print(f"\n[SUCCESS] Video Wav2Lip generat: {final_video}")
-    else:
-        print("\n[AVERTISMENT] Nu am găsit niciun .mp4 în folderul Wav2Lip.")
+        try:
+            subprocess.run(["xdg-open", str(final_video)])
+        except:
+            pass
+        return final_video
+    return None
 
-    return final_video
-
-
-
-
+# ----------------------------------------------------------
+#                       MAIN
+# ----------------------------------------------------------
 if __name__ == "__main__":
-    # 1. Inițializare Resurse AI
-    db = load_db()
-    llm = load_llm()
+    # 1. Încărcăm resursele manual
+    index, texts, embed_model, llm = load_resources()
     
-    if not llm:
-        print("[EXIT] Modelul LLM nu a putut fi încărcat.")
+    if not llm or not index:
+        print("[EXIT] Resursele nu au putut fi încărcate.")
         exit()
         
     print("\n" + "="*60)
-    print("🎓 TUTORE AI + AVATAR VIDEO (Llama 3 8B Local)")
-    print(f" Model: {LLM_MODEL_PATH.split('/')[-1]}")
+    print("🎓 TUTORE AI (Manual FAISS + Llama 3)")
     print(" Scrie 'exit' pentru a ieși.")
     print("="*60 + "\n")
 
-    # 2. Buclă interactivă
     while True:
         query_original = input("\nÎntrebarea ta: ")
         
         if query_original.lower() in ['exit', 'quit']:
             break
             
-        # 3. Retrieval
         query_normalized = unidecode(query_original)
-        context_docs = db.similarity_search(query_normalized, k=4)
         
-        # Extragere surse
-        surse_gasite = set()
-        for doc in context_docs:
-            raw_source = doc.metadata.get('source', 'Manual')
-            sursa_curata = " ".join(raw_source.split())
-            surse_gasite.add(sursa_curata)
+        # 2. Căutare Manuală (Fără LangChain)
+        context_docs = search_manual(query_normalized, index, texts, embed_model, k=4)
+        
+        # Extragere surse (simplificat)
+        surse = set([d.metadata['source'] for d in context_docs])
 
-        # 4. Generare Răspuns (Text)
+        # 3. Generare Răspuns
         prompt = create_prompt(context_docs, query_original)
         response_text = get_llm_response(prompt, llm)
         
@@ -281,19 +235,14 @@ if __name__ == "__main__":
             print("-" * 60)
             print(response_text.strip())
             print("-" * 60)
-            print("📚 SURSE:")
-            for i, sursa in enumerate(sorted(list(surse_gasite))):
-                if i < 3: print(f"   📍 {sursa}")
+            print("📚 SURSE POSIBILE:", list(surse)[:3])
             print("="*60 + "\n")
             
-
+            # 4. Video (Extragem doar explicația simplă dacă se poate)
+            text_pentru_avatar = response_text
             parts = re.split(r"\*\*Explicați[ea] simplă:\*\*", response_text, maxsplit=1)
             if len(parts) > 1:
-                text_after = parts[1].strip()
+                text_pentru_avatar = parts[1].strip()
 
-            print("[INFO] Începe generarea avatarului video...")
-            # generate_avatar_video(response_text.split("**Explicația simplă:**")[1])
-            generate_avatar_video_wav2lip(text_after)
-            
-        else:
-            print("Nu am putut genera un răspuns text.")
+            print(f"[INFO] Generare video...")
+            generate_avatar_video_wav2lip(text_pentru_avatar)
