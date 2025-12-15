@@ -274,6 +274,111 @@ Diferența semnificativă dintre scorurile ROUGE și Similaritate Semantică evi
   \item În unele cazuri apar \textbf{halucinații minore} (exemplul \#2).
 \end{itemize}
 
+\chapter{Îmbunătățirea și Optimizarea Algoritmului Inteligent}
+
+În această etapă a proiectului, ne-am concentrat pe îmbunătățirea algoritmului din punct de vedere al calității procesului de rezolvare (acuratețe semantică) și al complexității spațiale (portabilitate), implementând tehnici avansate de Machine Learning.
+
+\section{Optimizarea Sistemului RAG prin Two-Stage Retrieval (Reranking)}
+
+Pentru a reduce fenomenul de \textit{halucinație} și a crește relevanța contextului furnizat modelului generativ, am implementat o arhitectură de căutare în două etape (\textit{Two-Stage Retrieval}). Aceasta combină viteza căutării vectoriale cu precizia unui model de clasificare semantică.
+
+\subsection{Etapa 1: Candidate Generation (Bi-Encoder)}
+\begin{itemize}
+    \item \textbf{Tehnică:} Căutare Vectorială (\textit{Semantic Search}).
+    \item \textbf{Model:} \texttt{thenlper/gte-small} (Bi-Encoder).
+    \item \textbf{Proces:} Interogarea utilizatorului și fragmentele din documente sunt transformate în vectori (embeddings) într-un spațiu latent. Se folosește indexarea FAISS pentru a calcula distanța cosinus și a extrage rapid un număr extins de candidați (de exemplu, $k=20$).
+    \item \textbf{Scop:} Maximizarea \textbf{Recall-ului} (asigurarea că informația relevantă este extrasă, chiar dacă este însoțită de zgomot).
+\end{itemize}
+
+\subsection{Etapa 2: Reranking (Cross-Encoder)}
+\begin{itemize}
+    \item \textbf{Tehnică:} Reordonare bazată pe relevanță contextuală.
+    \item \textbf{Model:} \texttt{cross-encoder/ms-marco-MiniLM-L-6-v2}.
+    \item \textbf{Proces:} Cei 20 de candidați sunt analizați de un model Cross-Encoder împreună cu întrebarea. Spre deosebire de Bi-Encoder, Cross-Encoder-ul procesează perechea (Întrebare, Document) simultan prin straturile de atenție (\textit{Self-Attention}), calculând un scor de relevanță (\textit{logit}) pentru fiecare pereche.
+    \item \textbf{Scop:} Maximizarea \textbf{Preciziei} (filtrarea zgomotului).
+    \item \textbf{Rezultat:} Se selectează top 5 documente cu scorul cel mai mare pentru a fi trimise la LLM.
+\end{itemize}
+
+\section{Arhitectura de Căutare Hibridă (Ensembling)}
+
+Pentru a compensa limitările căutării pur vectoriale, am implementat o strategie de \textbf{Hybrid Search} care utilizează tehnici de ensembling (combinarea a doi algoritmi diferiți).
+
+\subsection{Componentele sistemului hibrid}
+Sistemul rulează doi „agenți” de căutare în paralel:
+\begin{enumerate}
+    \item \textbf{Căutare Semantică (Dense Retrieval):} Utilizează modele de embeddings și FAISS. Înțelege contextul și sinonimele (ex: „figuri cu trei laturi” $\rightarrow$ „triunghi”), dar poate rata termeni tehnici specifici.
+    \item \textbf{Căutare Lexicală (Sparse Retrieval):} Utilizează algoritmul \textbf{BM25} (o evoluție a TF-IDF). Analizează statistic frecvența cuvintelor exacte. Este extrem de precis în găsirea termenilor exacți (ex: „Teorema lui Ceva”), eliminând riscul confuziilor semantice.
+\end{enumerate}
+
+\subsection{Algoritmul de Fuziune: Reciprocal Rank Fusion (RRF)}
+Pentru a combina listele de rezultate, am utilizat RRF, o metodă bazată pe rang care nu depinde de scara scorurilor brute:
+\begin{itemize}
+    \item Dacă un document este găsit de ambii algoritmi pe poziții fruntașe, scorul său final este amplificat.
+    \item Dacă un document este găsit doar de un algoritm, este păstrat doar dacă are o relevanță foarte mare.
+\end{itemize}
+Prin Hybrid Search, am obținut un sistem robust care înțelege sensul întrebării dar respectă și terminologia exactă din geometrie.
+
+\section{Optimizarea Modelului Generativ prin Fine-Tuning (QLoRA)}
+
+Pentru a adapta stilul de comunicare (de la asistent generic la „Profesor de Geometrie”) și pentru a optimiza complexitatea spațială, am utilizat tehnica \textbf{QLoRA} (Quantized Low-Rank Adaptation).
+
+\subsection{Modificarea Arhitecturii și Complexitatea Spațială}
+\begin{itemize}
+    \item \textbf{Arhitectură (LoRA Adapters):} În loc de re-antrenarea tuturor parametrilor (\textit{Full Fine-Tuning}), am înghețat (freeze) modelul de bază și am injectat matrice de rang mic (\textit{Low-Rank Matrices}) în modulele de atenție ale Transformer-ului.
+    \item \textbf{Complexitate Redusă:} Numărul de parametri antrenabili a scăzut la sub 1\% din total.
+    \item \textbf{Portabilitate (Quantization):} Modelul a fost încărcat în precizie de 4-biți (NF4), reducând memoria necesară de la $\approx 16$GB la $\approx 6$GB VRAM, permițând rularea pe hardware consumer (ex: NVIDIA RTX 4060).
+\end{itemize}
+
+\subsection{Tehnici de Regularizare și Optimizare}
+\begin{itemize}
+    \item \textbf{Regularizare:} S-au aplicat \textbf{Weight Decay} și \textbf{LoRA Dropout} pentru a preveni overfitting-ul, având în vedere dimensiunea redusă a setului de date.
+    \item \textbf{Optimizator:} S-a folosit \textbf{Paged AdamW 8-bit}, o tehnică avansată de gestionare a memoriei în timpul backpropagation-ului.
+\end{itemize}
+
+\section{Augmentarea Datelor și a Interogărilor}
+
+\subsection{Query Expansion (Multi-Query Generation)}
+Am implementat un mecanism de expandare a interogării pentru a rezolva ambiguitatea întrebărilor studenților.
+\begin{itemize}
+    \item \textbf{Analiza:} Sistemul nu caută imediat interogarea brută (ex: „coliniaritate”).
+    \item \textbf{Generare:} Un apel LLM intern generează 3 variante semantice (ex: „Definiția coliniarității”, „Condiția de coliniaritate”, „Când sunt punctele coliniare?”).
+    \item \textbf{Execuție:} Sistemul execută Hybrid Search pentru toate variantele și agregă rezultatele, asigurând un \textbf{Recall} superior.
+\end{itemize}
+
+\subsection{Data Augmentation}
+Pentru antrenare, am generat un dataset sintetic pornind de la definiții brute, utilizând un LLM „Teacher” pentru a rescrie informația într-un stil conversațional, rezultând perechi de tip \textit{Instruct (User/Assistant)}.
+
+\section{Studiu Experimental al Hiperparametrilor}
+
+Am analizat impactul hiperparametrilor asupra performanței sistemului.
+
+\subsection{Schimbarea Modelului de Embedding}
+Trecerea de la \texttt{gte-small} la \texttt{paraphrase-multilingual-MiniLM-L12-v2} a îmbunătățit înțelegerea nuanțelor limbii române.
+
+\begin{center}
+\begin{tabular}{|p{4cm}|p{5cm}|p{5cm}|}
+\hline
+\textbf{Caracteristică} & \textbf{Model Inițial (gte-small)} & \textbf{Model Final (MiniLM)} \\
+\hline
+Limba & Preponderent Engleză & Multilingv (50+ limbi) \\
+\hline
+Înțelegere & Cuvinte cheie & Sens semantic profund \\
+\hline
+Rezultat RAG & Uneori irelevant & Precizie ridicată \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Analiza Temperaturii și a Chunk Size}
+În urma experimentelor pe setul de validare:
+\begin{itemize}
+    \item \textbf{Temperatura ($T$):} Valoarea optimă este $T=0.1$. La $T=0$, răspunsul este prea rigid, iar la $T > 0.2$, scorul ROUGE scade drastic (de la 19.23\% la 9.98\%), indicând halucinații.
+    \item \textbf{Chunk Size:} Dimensiunea de 256 tokeni a oferit cel mai bun echilibru. La 128 tokeni contextul este fragmentat, iar la 512 tokeni se introduce zgomot irelevant.
+    \item \textbf{Top-K:} Valoarea $k=4$ (documente extrase) a fost optimă. O creștere la $k=6$ a crescut latența fără a îmbunătăți semnificativ scorul semantic.
+\end{itemize}
+
+\end{document}
+
 \textbf{Concluzie parțială:}
 Rezultatele arată că sistemul RAG implementat are o \textbf{performanță semantică excelentă}, dar necesită îmbunătățiri și aplicarea unei penalizări de diversitate în prompt.
 

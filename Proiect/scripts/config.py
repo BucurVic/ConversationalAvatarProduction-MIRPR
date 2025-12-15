@@ -8,7 +8,7 @@ LLM_MODEL = "mistral-7b-instruct-v0.3.Q4_K_M.gguf"
 
 # Vectorstore
 DB_FAISS_PATH = str(BASE_DIR / "vectorstore")
-EMBEDDING_MODEL_NAME = "thenlper/gte-small"
+EMBEDDING_MODEL_NAME ="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 
 # SadTalker localizat în Proiect/external/SadTalker
 SADTALKER_REPO = str(BASE_DIR / "external" / "SadTalker")
