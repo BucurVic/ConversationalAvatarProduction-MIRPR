@@ -7,7 +7,7 @@ import pickle
 from sentence_transformers import SentenceTransformer
 from tqdm import tqdm  
 from unidecode import unidecode
-from llama_cpp import Llama # <--- ADĂUGAT: Rulare locală
+from llama_cpp import Llama 
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from rouge_score import rouge_scorer 
@@ -259,7 +259,7 @@ if __name__ == "__main__":
     # STEP 3B – Batch FAISS search
     # =============================================
     print("Searching FAISS index for all queries...")
-    D, I = index.search(query_vectors, k=4)
+    D, I = index.search(query_vectors, k=6)
 
     # =============================================
     # STEP 3C – Build prompts in a single vectorized pass
