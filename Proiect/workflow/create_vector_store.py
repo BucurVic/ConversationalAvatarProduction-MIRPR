@@ -1,28 +1,35 @@
+import os
+os.environ["OMP_NUM_THREADS"] = "1"
 import time
 import faiss
-import os
 import torch
 import pickle
 from sentence_transformers import SentenceTransformer
 from loader import load_data
 from chunk_splitter import chunk_function, EMBEDDING_MODEL_NAME
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.vectorstores import FAISS
 
-# Definim calea unde va fi salvată baza de date vectorială
 # DB_FAISS_PATH = 'vectorstore/'
 DB_FAISS_PATH = 'vectorstoretmp/'
 
+def get_device():
+    if torch.backends.mps.is_available():
+        return "mps"
+    elif torch.cuda.is_available():
+        return "cuda"
+    else:
+        return "cpu"
 
 def create_vector_store():
-    """
-    Funcție principală pentru a crea și salva baza de date vectorială.
-    """
+
     print("Pasul 1: Încărcarea datelor din PDF...")
     knowledge_base = load_data()
     
+    # Verificăm dacă avem date
+    if not knowledge_base:
+        print("EROARE: Nu s-au încărcat documente. Verifică calea fișierului PDF.")
+        return
+
     print("Pasul 2: Împărțirea documentelor în 'chunks'...")
-    # Folosim chunk_size=256
     docs_processed = chunk_function(256, knowledge_base)
     
     print(f"S-au procesat {len(docs_processed)} 'chunks' de documente.")
@@ -30,42 +37,42 @@ def create_vector_store():
     texts = [doc.page_content for doc in docs_processed]
 
     print(f"Pasul 3: Inițializarea modelului de embedding: {EMBEDDING_MODEL_NAME}...")
-    # Inițializează modelul de embedding-uri
-   
-    # embeddings = HuggingFaceEmbeddings(
-    #     model_name=EMBEDDING_MODEL_NAME,
-    #     model_kwargs={'device': 'cpu'}
-    # )
+    
+    device = get_device()
+    print(f"--> Modelul va rula pe: {device.upper()}")
+    
     embedding_model = SentenceTransformer(
         EMBEDDING_MODEL_NAME,
-        device="cuda" if torch.cuda.is_available() else "cpu"
+        device=device
     )
 
     def embed(texts):
-        return embedding_model.encode(
+        # Generăm embedding-urile
+        embeddings = embedding_model.encode(
             texts,
             batch_size=64,
             convert_to_numpy=True,
-            show_progress_bar=True
+            show_progress_bar=True,
+            normalize_embeddings=True 
         ).astype("float32")
+        return embeddings
 
     print("Pasul 4: Crearea bazei de date vectoriale FAISS...")
     start_time = time.time()
     
-    # Aceasta este comanda care construiește indexul.
-    # Trece prin toate 'docs_processed', calculează embedding-ul pentru fiecare
-    # și le adaugă în indexul FAISS.
-    # db = FAISS.from_documents(docs_processed, embeddings)
+    # Generăm embedding-urile
     embeddings = embed(texts)
     
     end_time = time.time()
-    print(f"Timpul necesar pentru a crea embedding-urile și indexul: {end_time - start_time:.2f} secunde.")
+    print(f"Timpul necesar pentru a crea embedding-urile: {end_time - start_time:.2f} secunde.")
 
     print(f"Pasul 5: Salvarea bazei de date în directorul '{DB_FAISS_PATH}'...")
-    # Salvăm indexul pe disc pentru a-l putea refolosi ulterior
-    # db.save_local(DB_FAISS_PATH)
+    
     dimension = embeddings.shape[1]
-    index = faiss.IndexFlatL2(dimension)
+    
+    # Folosim Inner Product (IP) pentru Cosine Similarity
+    index = faiss.IndexFlatIP(dimension) 
+    
     index.add(embeddings)
 
     os.makedirs(DB_FAISS_PATH, exist_ok=True)

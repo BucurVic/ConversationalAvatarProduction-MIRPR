@@ -1,10 +1,9 @@
-import re
+# from loader import load_data
+# import matplotlib.pyplot as plt
+# from tqdm import tqdm
+# from transformers import AutoTokenizer
+# import pandas as pd
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from loader import load_data
-import matplotlib.pyplot as plt
-from tqdm import tqdm
-from transformers import AutoTokenizer
-import pandas as pd
 from langchain_core.documents import Document as LangchainDocument
 
 
@@ -49,16 +48,16 @@ def chunk_function(
     return docs_processed_unique
 
 
-docs_processed = chunk_function(256, load_data()) 
+# docs_processed = chunk_function(256, load_data()) 
 
-tokenizer = AutoTokenizer.from_pretrained(EMBEDDING_MODEL_NAME)
-lengths = [len(tokenizer.encode(doc.page_content)) for doc in tqdm(docs_processed)]
-fig = pd.Series(lengths).hist()
-plt.title("Distribution of document lengths in the knowledge base (in count of tokens)")
-plt.xlabel("Tokens per chunk")
-plt.ylabel("Number of chunks")
+# tokenizer = AutoTokenizer.from_pretrained(EMBEDDING_MODEL_NAME)
+# lengths = [len(tokenizer.encode(doc.page_content)) for doc in tqdm(docs_processed)]
+# fig = pd.Series(lengths).hist()
+# plt.title("Distribution of document lengths in the knowledge base (in count of tokens)")
+# plt.xlabel("Tokens per chunk")
+# plt.ylabel("Number of chunks")
 
-plt.savefig("chunk_distribution.png") 
-print("Graficul distribuției chunk-urilor a fost salvat ca chunk_distribution.png")
+# plt.savefig("chunk_distribution.png") 
+# print("Graficul distribuției chunk-urilor a fost salvat ca chunk_distribution.png")
 
 # plt.show() 
