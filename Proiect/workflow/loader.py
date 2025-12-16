@@ -5,10 +5,7 @@ from langchain_core.documents import Document as LangchainDocument
 from unidecode import unidecode
 
 def clean_text_block(text: str):
-    """
-    Curăță un bloc de text (elimină diacritice și spații inutile),
-    dar DOAR după ce am separat capitolele.
-    """
+
     # 1. Elimină diacriticele
     text = unidecode(text)
     # 2. Înlocuiește newline cu spațiu și reduce spațiile multiple
@@ -23,12 +20,7 @@ def load_pdf_to_documents(pdf_path: str):
         text_all += page.get_text("text") + "\n"
     pdf.close()
 
-    # --- AICI ERA PROBLEMA: NU curățăm textul înainte de split! ---
-    # Păstrăm textul original (cu \n) ca să putem găsi titlurile.
-
-    # Regex ajustat: Caută "CAPITOLUL X" la început de rând sau după un newline
-    # Group 1: Titlul complet (ex: "CAPITOLUL 1 Vectori...")
-    # (?m) activează modul multiline
+    # Caută "CAPITOLUL X" la început de rând sau după un newline
     pattern = re.compile(r'(CAPITOLUL\s+\d+.*)', re.IGNORECASE)
 
     parts = pattern.split(text_all)
@@ -42,13 +34,11 @@ def load_pdf_to_documents(pdf_path: str):
             "source": "Introducere / Prefata"
         })
 
-    # Iterăm prin părțile găsite (titlu -> conținut -> titlu -> conținut)
     # parts[1] este primul titlu, parts[2] este conținutul primului capitol, etc.
     for i in range(1, len(parts), 2):
         raw_title = parts[i].strip()
         raw_content = parts[i+1].strip() if i + 1 < len(parts) else ""
         
-        # Curățăm ACUM titlul și conținutul, separat
         clean_title = clean_text_block(raw_title)
         clean_content = clean_text_block(raw_content)
         
@@ -57,7 +47,7 @@ def load_pdf_to_documents(pdf_path: str):
 
         dataSet.append({
             "text": full_text,
-            "source": clean_title # Sursa este doar titlul curat
+            "source": clean_title
         })
 
     print(f"S-au identificat {len(dataSet)} secțiuni/capitole.")
@@ -68,8 +58,7 @@ def load_pdf_to_documents(pdf_path: str):
     ]
 
 def load_data():
-    # Asigură-te că calea este corectă
-    vector_files = ["./data/manual2022.pdf"] 
+    vector_files = ["../data/manual2022.pdf"] 
     ds = []
     for path in vector_files:
         ds.extend(load_pdf_to_documents(path))
