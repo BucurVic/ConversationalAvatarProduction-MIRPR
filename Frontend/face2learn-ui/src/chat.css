@@ -1,0 +1,134 @@
+* {
+  box-sizing: border-box;
+}
+
+/* WRAPPER DE PAGINĂ – CENTRARE REALĂ */
+.page {
+  min-height: 100%;
+  display: flex;
+  justify-content: center;   /* CENTRU ORIZONTAL */
+  background: #020617;
+}
+
+/* CHAT CONTAINER */
+.app {
+  width: 100%;
+  max-width: 900px;          /* ← AICI e cheia */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #020617;
+  color: #e5e7eb;
+  font-family: system-ui, sans-serif;
+}
+
+/* HEADER */
+.header {
+  padding: 16px 20px;
+  font-size: 20px;
+  font-weight: 700;
+  border-bottom: 1px solid #1e293b;
+  justify-content: center;
+  display: flex;
+}
+
+/* MESSAGES */
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  padding-bottom: 100px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* BUBBLES */
+.bubble {
+  max-width: 70%;
+  padding: 12px 16px;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.bubble.ai {
+  background: #1e293b;
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+
+.bubble.user {
+  background: #4f46e5;
+  align-self: flex-end;
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+/* MEDIA */
+.bubble video {
+  max-width: 100%;
+  margin-top: 8px;
+  border-radius: 12px;
+}
+
+/* INPUT */
+.input-bar {
+  position: sticky;
+  bottom: 0;
+
+  display: flex;
+  gap: 10px;
+  padding: 16px;
+
+  background: #020617;              /* FUNDAL SOLID */
+  border-top: 1px solid #1e293b;
+}
+
+
+.input-bar input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: #1e293b;
+  color: white;
+  outline: none;
+}
+
+.input-bar button {
+  padding: 0 18px;
+  border-radius: 12px;
+  border: none;
+  background: #4f46e5;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+
+.input-bar input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.input-bar button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.sources {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.sources ul {
+  margin: 4px 0 0 16px;
+  padding: 0;
+}
+
+.sources li {
+  list-style: disc;
+}
+
