@@ -17,11 +17,10 @@ else
     echo "-> Wav2Lip este deja clonat. Continuăm."
 fi
 
-# 2. Instalăm dependințele necesare
-echo ""
-echo "-> Instalăm dependințele..."
+# # 2. Instalăm dependințele necesare
+# echo ""
+# echo "-> Instalăm dependințele..."
 
-pip install numpy opencv-python moviepy librosa tqdm
 
 # 3. Descărcăm modelul pre-antrenat
 echo ""
@@ -30,11 +29,3 @@ echo "-> Descărcăm modelul pre-antrenat Wav2Lip..."
 cd $TARGET_DIR
 
 mkdir -p checkpoints
-
-curl -L -o checkpoints/wav2lip_gan.pth \
-"https://huggingface.co/spaces/SmilingWolf/wav2lip/resolve/main/Wav2Lip/checkpoints/wav2lip_gan.pth?download=true"
-
-echo "=============================================="
-echo "  Wav2Lip instalat cu succes!"
-echo "  Găsit în: external/Wav2Lip/"
-echo "=============================================="
