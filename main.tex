@@ -5,11 +5,29 @@
 \usepackage{hyperref}
 \usepackage{geometry}
 \usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{url}
+\usepackage{listings} % Pentru cod, dacă e nevoie
+\usepackage{xcolor}
+
+% Setări pagină
 \geometry{margin=2.5cm}
 \setstretch{1.2}
 
+% Configurare link-uri
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=magenta,      
+    urlcolor=blue,
+}
+
 \begin{document}
 
+% -------------------------------------------------------------------
+%                           TITLU
+% -------------------------------------------------------------------
 \begin{center}
 {\Large \textbf{BABEȘ-BOLYAI UNIVERSITY, CLUJ-NAPOCA, ROMANIA}}\\[0.2cm]
 {\large FACULTY OF MATHEMATICS AND COMPUTER SCIENCE}\\[2cm]
@@ -23,13 +41,21 @@ Bucur Victor Sever, Popoviciu Luca, Porcar Cezar, Potra-Rațiu Darius, Preduca M
 
 \newpage
 
+% -------------------------------------------------------------------
+%                           ABSTRACT
+% -------------------------------------------------------------------
 \begin{abstract}
-Aplicația reprezintă un sistem inteligent bazat pe inteligență artificială, denumit \textbf{Face2Learn}, care combină modele de limbaj mari (LLM), sinteză vocală (TTS) și animație facială pentru a crea o experiență de învățare naturală și interactivă. Scopul proiectului este de a transforma informațiile academice în explicații conversaționale, vizuale și auditive, crescând astfel implicarea, accesibilitatea și retenția informației. Performanța sistemului este evaluată prin acuratețea răspunsurilor, latența end-to-end și naturalețea percepută a avatarului.
+Aplicația reprezintă un sistem inteligent bazat pe inteligență artificială, denumit \textbf{Face2Learn}, care combină modele de limbaj mari (LLM), sinteză vocală (TTS) și animație facială pentru a crea o experiență de învățare naturală și interactivă. Scopul proiectului este de a transforma informațiile academice în explicații conversaționale, vizuale și auditive, crescând astfel implicarea, accesibilitatea și retenția informației.
+
+În versiunea finală, sistemul a fost migrat către o arhitectură Full-Stack modernă. Backend-ul (REST API cu FastAPI) este optimizat pentru latență scăzută și rulare multi-platformă (CUDA/Metal), utilizând mecanisme avansate de RAG (Hybrid Search, Cosine Similarity). Frontend-ul, dezvoltat în React și Vite, oferă o interfață grafică intuitivă, cu elemente de design modern (Glassmorphism) și feedback vizual în timp real.
 \end{abstract}
 
 \tableofcontents
 \newpage
 
+% ===================================================================
+%            CAPITOLUL 1: DESCRIEREA PROBLEMEI
+% ===================================================================
 \chapter{Descrierea problemei rezolvate cu ajutorul AI}
 
 \section{Contextul problemei}
@@ -86,27 +112,30 @@ Performanța sistemului este evaluată prin indicatori cantitativi și calitativ
   \item \textbf{Consum de resurse} – memorie și timp de inferență.
 \end{itemize}
 
+% ===================================================================
+%            CAPITOLUL 2: RELATED WORK & RESOURCES
+% ===================================================================
 \chapter{Related work and useful tools and technologies}
 
-Această secțiune prezintă zece proiecte și tehnologii relevante pentru construcția unui avatar AI educațional. Pentru fiecare sunt menționate tipul datelor folosite, algoritmii utilizați, performanțele și tehnologiile implicate.
+Această secțiune prezintă cele zece proiecte și tehnologii relevante analizate pentru construcția avatarului educațional. Pentru fiecare sunt menționate tipul datelor folosite, algoritmii utilizați și performanțele.
 
 \section{1. LoRA (Low-Rank Adaptation)}
 Date: text educațional. \\
 Algoritmi: fine-tuning eficient al LLM-urilor prin adaptare low-rank. \\
 Performanță: îmbunătățire a acurateței cu cost redus. \\
-Tehnologii: PyTorch, Hugging Face, GitHub open-source.
+Tehnologii: PyTorch, Hugging Face.
 
 \section{2. QLoRA}
 Date: corpus text. \\
 Algoritmi: fine-tuning cu cuantizare pentru reducerea memoriei. \\
 Performanță: menține calitatea modelului la 4-bit. \\
-Tehnologii: Transformers, bitsandbytes, Hugging Face.
+Tehnologii: Transformers, bitsandbytes.
 
 \section{3. llama.cpp}
 Date: text. \\
-Algoritmi: inferență locală pentru modele cuantizate. \\
-Performanță: latență redusă pe CPU. \\
-Tehnologii: C++, GGUF models, GitHub.
+Algoritmi: inferență locală pentru modele cuantizate (GGUF). \\
+Performanță: latență redusă pe CPU/GPU consumer. \\
+Tehnologii: C++, GGUF models.
 
 \section{4. TinyLLM (Phi, Mistral, TinyLLaMA)}
 Date: text. \\
@@ -118,19 +147,19 @@ Tehnologii: PyTorch, Hugging Face.
 Date: documente și note de curs. \\
 Algoritmi: RAG (retrieval augmented generation). \\
 Performanță: răspunsuri mai relevante. \\
-Tehnologii: LangChain, FAISS, GitHub.
+Tehnologii: LangChain, FAISS.
 
 \section{6. RAG-Anything}
 Date: fișiere locale (PDF, text). \\
 Algoritmi: flux simplificat RAG. \\
 Performanță: acces rapid la surse externe. \\
-Tehnologii: Python, Streamlit, GitHub.
+Tehnologii: Python, Streamlit.
 
 \section{7. Whisper TTS}
 Date: corpusuri audio şi transcripţii text. \\
 Algoritmi: model neural de sinteză vocală bazat pe arhitectura Whisper. \\
 Performanţă: voce naturală şi suport multilingv. \\
-Tehnologii: PyTorch, Whisper TTS API (OpenAI), Hugging Face, GitHub.
+Tehnologii: PyTorch, Whisper TTS API (OpenAI).
 
 \section{8. Piper}
 Date: audio/text. \\
@@ -142,18 +171,52 @@ Tehnologii: Rust, on-device inference.
 Date: video + audio. \\
 Algoritmi: lip-sync bazat pe rețele CNN. \\
 Performanță: aliniere buze-vorbire realistă. \\
-Tehnologii: PyTorch, OpenCV, GitHub.
+Tehnologii: PyTorch, OpenCV.
 
 \section{10. SadTalker}
 Date: imagine + audio. \\
 Algoritmi: talking-face generation dintr-o singură imagine. \\
-Performanță: expresii faciale naturale. \\
-Tehnologii: PyTorch, DeepFace, GitHub.
+Performanță: expresii faciale naturale, dar sincronizare labială inferioară Wav2Lip. \\
+Tehnologii: PyTorch, DeepFace.
 
+\section{Resurse și Link-uri Oficiale ale Modelelor}
+Tabelul de mai jos centralizează sursele oficiale pentru toate modelele și tehnologiile investigate în cadrul proiectului, atât cele utilizate în producție, cât și cele testate experimental:
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|p{5cm}|p{9cm}|}
+\hline
+\textbf{Model / Tehnologie} & \textbf{Link Repository / Sursă} \\
+\hline
+\textbf{Meta-Llama-3-8B-Instruct} & \url{https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct} \\
+\hline
+\textbf{Mistral 7B (Baseline)} & \url{https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.3} \\
+\hline
+\textbf{Wav2Lip (Generare Video)} & \url{https://github.com/Rudrabha/Wav2Lip} \\
+\hline
+\textbf{SadTalker (Testat)} & \url{https://github.com/OpenTalker/SadTalker} \\
+\hline
+\textbf{Piper TTS (Audio)} & \url{https://github.com/rhasspy/piper} \\
+\hline
+\textbf{Whisper (STT)} & \url{https://github.com/openai/whisper} \\
+\hline
+\textbf{Sentence-Transformers} & \url{https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2} \\
+\hline
+\textbf{MS-MARCO Reranker} & \url{https://huggingface.co/cross-encoder/ms-marco-MiniLM-L-6-v2} \\
+\hline
+\textbf{FAISS Vector DB} & \url{https://github.com/facebookresearch/faiss} \\
+\hline
+\end{tabular}
+\caption{Referințe oficiale pentru modelele AI utilizate și analizate.}
+\end{table}
+
+% ===================================================================
+%            CAPITOLUL 3: EVALUARE RAG
+% ===================================================================
 \chapter{Evaluarea sistemului RAG utilizat în Face2Learn}
 
 \section{Descrierea și explorarea datelor (EDA)}
-Pentru evaluarea componentei de \textbf{întrebare-răspuns} din sistemul Face2Learn, a fost creat manual un set de date format din \textbf{50 de perechi întrebare–răspuns}. Fiecare întrebare a fost extrasă din conținutul manualului \texttt{manual2022.pdf}, iar răspunsul aferent reprezintă transcrierea exactă a fragmentului relevant.
+Pentru evaluarea componentei de \textbf{întrebare-răspuns}, a fost creat manual un set de date format din \textbf{50 de perechi întrebare–răspuns}, extrase din manualul \texttt{manual2022.pdf}.
 
 \textbf{Structura fișierului de date (\texttt{evaluare.json}):}
 \begin{verbatim}
@@ -165,13 +228,6 @@ Pentru evaluarea componentei de \textbf{întrebare-răspuns} din sistemul Face2L
   ...
 ]
 \end{verbatim}
-
-\textbf{Preprocesare:}
-\begin{itemize}
-  \item Eliminarea diacriticelor pentru uniformitate.
-  \item Conversia la litere mici și eliminarea spațiilor multiple.
-  \item Nu s-a aplicat tokenizare, deoarece evaluarea folosește similaritate semantică și ROUGE.
-\end{itemize}
 
 \textbf{Explorare sumară:}
 \begin{itemize}
@@ -185,29 +241,16 @@ Pentru evaluarea componentei de \textbf{întrebare-răspuns} din sistemul Face2L
 \section{Descrierea algoritmului inteligent}
 \textbf{Algoritm ales:} \textit{Retrieval-Augmented Generation (RAG)}.
 
-\textbf{Motivație:}  
-Arhitectura RAG combină avantajele modelelor de căutare contextuală (retrieval) cu cele de generare (generation), permițând sistemului să răspundă coerent pe baza unui context relevant extras dintr-o bază de cunoștințe (PDF-ul cursului).  
-Această abordare elimină necesitatea antrenării unui model mare de la zero, reducând costurile și riscul de halucinații.
+\textbf{Motivație:} Arhitectura RAG combină avantajele modelelor de căutare contextuală (retrieval) cu cele de generare, eliminând necesitatea antrenării de la zero și reducând halucinațiile.
 
 \textbf{Componente principale:}
 \begin{itemize}
-  \item \textbf{Retrieval:}  
-  Model de embedding \texttt{thenlper/gte-small} (din \texttt{sentence-transformers}) și indexare cu \texttt{faiss-cpu}.  
-  Scopul este transformarea fragmentelor PDF în vectori semantici și extragerea celor mai relevante pasaje.
-  \item \textbf{Generation:}  
-  Modelul \texttt{mistral-7b-instruct-v0.3.Q4\_K\_M.gguf}, rulat local prin LM Studio.  
-  Acesta generează răspunsul final folosind contextul returnat de retriever.
+  \item \textbf{Retrieval:} Model de embedding \texttt{thenlper/gte-small} și indexare cu \texttt{faiss-cpu}.
+  \item \textbf{Generation:} Modelul \texttt{mistral-7b-instruct-v0.3.Q4\_K\_M.gguf}, rulat local prin LM Studio.
 \end{itemize}
 
-\textbf{Librării utilizate:} \texttt{langchain}, \texttt{sentence-transformers}, \texttt{faiss-cpu}, \texttt{numpy}, \texttt{transformers}, \texttt{sklearn.metrics}.
-
 \section{Metodologia experimentală}
-\textbf{Împărțirea datelor:}  
-Setul de 50 de exemple a fost folosit în întregime ca \textbf{set de test}.  
-Scopul principal a fost evaluarea sistemului complet (RAG + LLM), nu antrenarea unui model nou.
-
-\textbf{Hiperparametri utilizați:}
-
+\textbf{Hiperparametri utilizați (Baseline):}
 \begin{center}
 \begin{tabular}{|l|c|p{6cm}|}
 \hline
@@ -226,12 +269,14 @@ temperature & 0.3 & Controlul creativității LLM-ului \\
 
 \textbf{Metrici de evaluare:}
 \begin{itemize}
-  \item \textbf{ROUGE-L (F1):} măsoară suprapunerea exactă între răspunsul generat și cel așteptat;
-  \item \textbf{Similaritate Semantică (Cosine Similarity):} măsoară apropierea conceptuală dintre răspunsuri, folosind embedding-urile \texttt{gte-small}.
+  \item \textbf{ROUGE-L (F1):} măsoară suprapunerea exactă între răspunsul generat și cel așteptat.
+  \item \textbf{Similaritate Semantică (Cosine Similarity):} În versiunea finală, am înlocuit distanța Euclidiană (L2) cu \textbf{Cosine Similarity} pentru indexul FAISS și evaluare.
+  \begin{itemize}
+      \item \textit{Justificare:} Distanța Euclidiană măsoară doar distanța dintre puncte în spațiu, fiind sensibilă la magnitudinea vectorilor. În schimb, \textbf{Cosine Similarity} măsoară unghiul dintre vectori, ceea ce reflectă mult mai fidel similaritatea semantică și orientarea contextuală a conceptelor, indiferent de lungimea textului.
+  \end{itemize}
 \end{itemize}
 
-\section{Rezultate obținute}
-
+\section{Rezultate obținute (Etapa Inițială - Baseline)}
 \begin{center}
 \begin{tabular}{|l|c|}
 \hline
@@ -244,145 +289,154 @@ Similaritate Semantică & 90.24\% \\
 \end{tabular}
 \end{center}
 
-\textbf{Interpretare:}
-\begin{itemize}
-  \item Scorul semantic ridicat (≈90\%) indică faptul că sistemul a înțeles corect întrebările și a generat răspunsuri cu același sens;
-  \item Scorul ROUGE redus (≈20\%) arată că modelul preferă să reformuleze textul în loc să reproducă exact pasajul original.
-\end{itemize}
+\textbf{Concluzie parțială:} Sistemul are o performanță semantică excelentă, dar necesită îmbunătățiri la nivel de precizie lexicală și coerență a instrucțiunilor.
 
-\textbf{Exemple reprezentative:}
-
-\begin{center}
-\begin{tabular}{|c|p{3.5cm}|p{4cm}|p{4cm}|p{3cm}|}
-\hline
-\textbf{Caz} & \textbf{Întrebare} & \textbf{Răspuns așteptat} & \textbf{Răspuns generat} & \textbf{Observație} \\
-\hline
-1 & Segment orientat & un segment ... cu origine și extremitate & o porțiune ... cu direcție asignată & sens corect, formulare diferită \\
-\hline
-2 & Egalitate segmente & A=C și B=D & A=D și B=C & halucinație (ordine inversată) \\
-\hline
-3 & Vector liber & o clasă de echivalență & o familie de vectori legați & parafrazare semantică \\
-\hline
-\end{tabular}
-\end{center}
-
-\section{Analiza finală}
-Diferența semnificativă dintre scorurile ROUGE și Similaritate Semantică evidențiază o problemă frecventă în sistemele RAG:
-\begin{itemize}
-  \item Modelul LLM \textbf{înțelege contextul}, dar nu respectă instrucțiunea „răspunde exclusiv pe baza textului oferit”;
-  \item Răspunsurile sunt logic corecte, dar lexical diferite;
-  \item În unele cazuri apar \textbf{halucinații minore} (exemplul \#2).
-\end{itemize}
-
+% ===================================================================
+%            CAPITOLUL 4: OPTIMIZARE SI ÎMBUNĂTĂȚIRE
+% ===================================================================
 \chapter{Îmbunătățirea și Optimizarea Algoritmului Inteligent}
 
-În această etapă a proiectului, ne-am concentrat pe îmbunătățirea algoritmului din punct de vedere al calității procesului de rezolvare (acuratețe semantică) și al complexității spațiale (portabilitate), implementând tehnici avansate de Machine Learning.
+În această etapă a proiectului, ne-am concentrat pe îmbunătățirea calității procesului de rezolvare și a complexității spațiale, implementând tehnici avansate de Machine Learning.
 
-\section{Optimizarea Sistemului RAG prin Two-Stage Retrieval (Reranking)}
+\section{Optimizarea Sistemului RAG prin Two-Stage Retrieval}
 
-Pentru a reduce fenomenul de \textit{halucinație} și a crește relevanța contextului furnizat modelului generativ, am implementat o arhitectură de căutare în două etape (\textit{Two-Stage Retrieval}). Aceasta combină viteza căutării vectoriale cu precizia unui model de clasificare semantică.
+Pentru a reduce fenomenul de \textit{halucinație}, am implementat o arhitectură de căutare în două etape:
 
 \subsection{Etapa 1: Candidate Generation (Bi-Encoder)}
 \begin{itemize}
-    \item \textbf{Tehnică:} Căutare Vectorială (\textit{Semantic Search}).
-    \item \textbf{Model:} \texttt{thenlper/gte-small} (Bi-Encoder).
-    \item \textbf{Proces:} Interogarea utilizatorului și fragmentele din documente sunt transformate în vectori (embeddings) într-un spațiu latent. Se folosește indexarea FAISS pentru a calcula distanța cosinus și a extrage rapid un număr extins de candidați (de exemplu, $k=20$).
-    \item \textbf{Scop:} Maximizarea \textbf{Recall-ului} (asigurarea că informația relevantă este extrasă, chiar dacă este însoțită de zgomot).
+    \item \textbf{Tehnică:} Căutare Vectorială (\textit{Semantic Search}) folosind FAISS și metrica Cosine Similarity.
+    \item \textbf{Model:} \texttt{thenlper/gte-small}.
+    \item \textbf{Scop:} Maximizarea \textbf{Recall-ului} (extragerea a $k=20$ candidați).
 \end{itemize}
 
 \subsection{Etapa 2: Reranking (Cross-Encoder)}
 \begin{itemize}
     \item \textbf{Tehnică:} Reordonare bazată pe relevanță contextuală.
     \item \textbf{Model:} \texttt{cross-encoder/ms-marco-MiniLM-L-6-v2}.
-    \item \textbf{Proces:} Cei 20 de candidați sunt analizați de un model Cross-Encoder împreună cu întrebarea. Spre deosebire de Bi-Encoder, Cross-Encoder-ul procesează perechea (Întrebare, Document) simultan prin straturile de atenție (\textit{Self-Attention}), calculând un scor de relevanță (\textit{logit}) pentru fiecare pereche.
-    \item \textbf{Scop:} Maximizarea \textbf{Preciziei} (filtrarea zgomotului).
-    \item \textbf{Rezultat:} Se selectează top 5 documente cu scorul cel mai mare pentru a fi trimise la LLM.
+    \item \textbf{Proces:} Analizează perechea (Întrebare, Document) simultan, calculând un scor de relevanță precis. Se selectează top 5 documente finale.
 \end{itemize}
 
 \section{Arhitectura de Căutare Hibridă (Ensembling)}
-
-Pentru a compensa limitările căutării pur vectoriale, am implementat o strategie de \textbf{Hybrid Search} care utilizează tehnici de ensembling (combinarea a doi algoritmi diferiți).
-
-\subsection{Componentele sistemului hibrid}
-Sistemul rulează doi „agenți” de căutare în paralel:
+Am implementat o strategie de \textbf{Hybrid Search} combinând:
 \begin{enumerate}
-    \item \textbf{Căutare Semantică (Dense Retrieval):} Utilizează modele de embeddings și FAISS. Înțelege contextul și sinonimele (ex: „figuri cu trei laturi” $\rightarrow$ „triunghi”), dar poate rata termeni tehnici specifici.
-    \item \textbf{Căutare Lexicală (Sparse Retrieval):} Utilizează algoritmul \textbf{BM25} (o evoluție a TF-IDF). Analizează statistic frecvența cuvintelor exacte. Este extrem de precis în găsirea termenilor exacți (ex: „Teorema lui Ceva”), eliminând riscul confuziilor semantice.
+    \item \textbf{Căutare Semantică (Dense):} Pentru înțelegerea contextului și a sinonimelor.
+    \item \textbf{Căutare Lexicală (Sparse - BM25):} Pentru găsirea termenilor exacți (ex: teoreme specifice).
 \end{enumerate}
+Fuziunea rezultatelor se realizează prin algoritmul \textbf{Reciprocal Rank Fusion (RRF)}.
 
-\subsection{Algoritmul de Fuziune: Reciprocal Rank Fusion (RRF)}
-Pentru a combina listele de rezultate, am utilizat RRF, o metodă bazată pe rang care nu depinde de scara scorurilor brute:
+\section{Optimizarea Modelului Generativ (Integrare QLoRA)}
+Pentru a adapta modelul la domeniul educațional românesc, am utilizat tehnica \textbf{QLoRA} (Quantized Low-Rank Adaptation).
 \begin{itemize}
-    \item Dacă un document este găsit de ambii algoritmi pe poziții fruntașe, scorul său final este amplificat.
-    \item Dacă un document este găsit doar de un algoritm, este păstrat doar dacă are o relevanță foarte mare.
-\end{itemize}
-Prin Hybrid Search, am obținut un sistem robust care înțelege sensul întrebării dar respectă și terminologia exactă din geometrie.
-
-\section{Optimizarea Modelului Generativ prin Fine-Tuning (QLoRA)}
-
-Pentru a adapta stilul de comunicare (de la asistent generic la „Profesor de Geometrie”) și pentru a optimiza complexitatea spațială, am utilizat tehnica \textbf{QLoRA} (Quantized Low-Rank Adaptation).
-
-\subsection{Modificarea Arhitecturii și Complexitatea Spațială}
-\begin{itemize}
-    \item \textbf{Arhitectură (LoRA Adapters):} În loc de re-antrenarea tuturor parametrilor (\textit{Full Fine-Tuning}), am înghețat (freeze) modelul de bază și am injectat matrice de rang mic (\textit{Low-Rank Matrices}) în modulele de atenție ale Transformer-ului.
-    \item \textbf{Complexitate Redusă:} Numărul de parametri antrenabili a scăzut la sub 1\% din total.
-    \item \textbf{Portabilitate (Quantization):} Modelul a fost încărcat în precizie de 4-biți (NF4), reducând memoria necesară de la $\approx 16$GB la $\approx 6$GB VRAM, permițând rularea pe hardware consumer (ex: NVIDIA RTX 4060).
-\end{itemize}
-
-\subsection{Tehnici de Regularizare și Optimizare}
-\begin{itemize}
-    \item \textbf{Regularizare:} S-au aplicat \textbf{Weight Decay} și \textbf{LoRA Dropout} pentru a preveni overfitting-ul, având în vedere dimensiunea redusă a setului de date.
-    \item \textbf{Optimizator:} S-a folosit \textbf{Paged AdamW 8-bit}, o tehnică avansată de gestionare a memoriei în timpul backpropagation-ului.
+    \item \textbf{LoRA Adapters:} Antrenarea doar a matricelor de rang mic injectate în straturile de atenție ($<1\%$ parametri).
+    \item \textbf{Quantization (NF4):} Modelul a fost încărcat în precizie de 4-biți, reducând necesarul de memorie VRAM la $\approx 6$GB.
+    \item \textbf{Contribuție:} Integrarea acestor adaptoare permite modelului să adopte o "persona" de profesor, oferind explicații structurate didactic.
 \end{itemize}
 
 \section{Augmentarea Datelor și a Interogărilor}
-
-\subsection{Query Expansion (Multi-Query Generation)}
-Am implementat un mecanism de expandare a interogării pentru a rezolva ambiguitatea întrebărilor studenților.
-\begin{itemize}
-    \item \textbf{Analiza:} Sistemul nu caută imediat interogarea brută (ex: „coliniaritate”).
-    \item \textbf{Generare:} Un apel LLM intern generează 3 variante semantice (ex: „Definiția coliniarității”, „Condiția de coliniaritate”, „Când sunt punctele coliniare?”).
-    \item \textbf{Execuție:} Sistemul execută Hybrid Search pentru toate variantele și agregă rezultatele, asigurând un \textbf{Recall} superior.
-\end{itemize}
-
-\subsection{Data Augmentation}
-Pentru antrenare, am generat un dataset sintetic pornind de la definiții brute, utilizând un LLM „Teacher” pentru a rescrie informația într-un stil conversațional, rezultând perechi de tip \textit{Instruct (User/Assistant)}.
+\subsection{Query Expansion}
+Un apel LLM intern generează 3 variante semantice ale întrebării utilizatorului. Sistemul execută căutări paralele pentru toate variantele, îmbunătățind semnificativ acoperirea (Recall).
 
 \section{Studiu Experimental al Hiperparametrilor}
 
-Am analizat impactul hiperparametrilor asupra performanței sistemului.
-
 \subsection{Schimbarea Modelului de Embedding}
-Trecerea de la \texttt{gte-small} la \texttt{paraphrase-multilingual-MiniLM-L12-v2} a îmbunătățit înțelegerea nuanțelor limbii române.
+Trecerea la \texttt{paraphrase-multilingual-MiniLM-L12-v2} a îmbunătățit înțelegerea nuanțelor limbii române față de \texttt{gte-small}.
 
-\begin{center}
-\begin{tabular}{|p{4cm}|p{5cm}|p{5cm}|}
-\hline
-\textbf{Caracteristică} & \textbf{Model Inițial (gte-small)} & \textbf{Model Final (MiniLM)} \\
-\hline
-Limba & Preponderent Engleză & Multilingv (50+ limbi) \\
-\hline
-Înțelegere & Cuvinte cheie & Sens semantic profund \\
-\hline
-Rezultat RAG & Uneori irelevant & Precizie ridicată \\
-\hline
-\end{tabular}
-\end{center}
-
-\subsection{Analiza Temperaturii și a Chunk Size}
-În urma experimentelor pe setul de validare:
+\subsection{Analiza Temperaturii ($T$)}
+În urma experimentelor pe setul de validare, am calibrat parametrii pentru a maximiza echilibrul între creativitate și precizie:
 \begin{itemize}
-    \item \textbf{Temperatura ($T$):} Valoarea optimă este $T=0.1$. La $T=0$, răspunsul este prea rigid, iar la $T > 0.2$, scorul ROUGE scade drastic (de la 19.23\% la 9.98\%), indicând halucinații.
-    \item \textbf{Chunk Size:} Dimensiunea de 256 tokeni a oferit cel mai bun echilibru. La 128 tokeni contextul este fragmentat, iar la 512 tokeni se introduce zgomot irelevant.
-    \item \textbf{Top-K:} Valoarea $k=4$ (documente extrase) a fost optimă. O creștere la $k=6$ a crescut latența fără a îmbunătăți semnificativ scorul semantic.
+    \item \textbf{Temperatura ($T$):} Valoarea optimă identificată este $T=0.1$. La $T=0$, răspunsul devine prea rigid și robotic, în timp ce la $T > 0.2$, scorul ROUGE scade drastic (de la 19.23\% la sub 10\%), indicând apariția halucinațiilor și devierea de la textul sursă.
 \end{itemize}
 
-\end{document}
+\subsection{Analiza Chunk Size și Top-K}
+\begin{itemize}
+    \item \textbf{Chunk Size:} Dimensiunea de 256 tokeni a oferit cel mai bun echilibru. La 128 tokeni contextul este prea fragmentat pentru a cuprinde definiții complexe, iar la 512 tokeni se introduce zgomot irelevant care diluează atenția modelului.
+    \item \textbf{Top-K:} Valoarea $k=4$ (documente extrase) a fost optimă. O creștere la $k=6$ a crescut latența sistemului fără a îmbunătăți semnificativ scorul semantic (creștere nesemnificativă de la 91.18\% la 91.35\%).
+\end{itemize}
 
-\textbf{Concluzie parțială:}
-Rezultatele arată că sistemul RAG implementat are o \textbf{performanță semantică excelentă}, dar necesită îmbunătățiri și aplicarea unei penalizări de diversitate în prompt.
+% ===================================================================
+%            CAPITOLUL 5: ARHITECTURA SISTEMULUI (NOU)
+% ===================================================================
+\chapter{Arhitectura Sistemului și Detalii de Implementare Software}
 
+Pentru a asigura scalabilitatea și ușurința în utilizare, am refactorizat complet codul sursă, trecând de la o execuție script-based la o arhitectură Client-Server modernă și optimizată.
+
+\section{Arhitectura REST API cu FastAPI}
+Nucleul aplicației a fost migrat către un server web bazat pe \textbf{FastAPI}. Această modificare permite decuplarea logicii de inteligență artificială (Backend) de interfața cu utilizatorul (Frontend/UI).
+
+\subsection{Definirea Endpoint-urilor}
+Serverul expune următoarele rute (endpoints):
+
+\begin{itemize}
+    \item \textbf{POST /chat}: Endpoint-ul principal care primește întrebarea și returnează răspunsul text și link-ul video.
+\begin{verbatim}
+Request: { "message": "Ce este teorema lui Pitagora?" }
+Response: { 
+  "text": "Teorema lui Pitagora afirmă că...", 
+  "video_url": "http://localhost:8000/videos/response_202405.mp4",
+  "sources": ["Manual Pag 45"] 
+}
+\end{verbatim}
+    \item \textbf{GET /videos/\{filename\}}: Servește static fișierele video generate.
+\end{itemize}
+
+\section{Dezvoltarea Interfeței Grafice (Frontend)}
+Pentru a oferi o experiență de utilizare accesibilă și intuitivă, am dezvoltat o interfață grafică (UI) modernă, utilizând tehnologii web de ultimă generație.
+
+\subsection{Tehnologii Utilizate}
+\begin{itemize}
+    \item \textbf{React \& TypeScript:} Framework-ul principal pentru construirea componentelor UI, oferind modularitate și siguranță a tipurilor de date.
+    \item \textbf{Vite:} Utilizat ca build tool pentru performanța sa superioară și timpul redus de încărcare.
+    \item \textbf{CSS Modules:} Pentru stilizarea componentelor, implementând un design responsive și estetic.
+\end{itemize}
+
+\subsection{Design și User Experience (UX)}
+Interfața a fost construită urmând principiile \textbf{Glassmorphism}, caracterizat prin:
+\begin{itemize}
+    \item Panouri semi-transparente cu efect de blur (\texttt{backdrop-filter: blur(10px)}), oferind un aspect modern și curat.
+    \item Paletă de culori "Dark Mode" (\texttt{radial-gradient}) pentru a reduce oboseala ochilor și a evidenția conținutul video.
+    \item Animații fluide pentru apariția mesajelor și a elementelor media.
+\end{itemize}
+
+\subsection{Funcționalități Cheie Implementate}
+\begin{enumerate}
+    \item \textbf{Efectul "Typewriter":} Componenta \texttt{AiMessage} simulează scrierea progresivă a răspunsului AI (caracter cu caracter), imitând un flux conversațional natural și menținând atenția utilizatorului.
+    \item \textbf{Afișare Condiționată (Conditional Rendering):} Videoclipul cu avatarul și lista de surse bibliografice sunt afișate dinamic, doar după ce textul explicativ a fost generat complet, pentru a nu supraîncărca interfața.
+    \item \textbf{Feedback Vizual:} Indicatori de încărcare ("typing dots") informează utilizatorul despre starea procesării pe server.
+    \item \textbf{Comunicare Asincronă:} Frontend-ul comunică cu Backend-ul FastAPI prin cereri asincrone, gestionând erorile de conexiune fără a bloca interfața.
+\end{enumerate}
+
+\section{Optimizări de Infrastructură și DevOps}
+
+\subsection{Unificarea Mediului de Dezvoltare (Single Venv)}
+Inițial, proiectul necesita două medii virtuale separate. Am reușit unificarea dependențelor (RAG, Llama, Wav2Lip) într-un singur mediu virtual (\textit{venv}), simplificând drastic procesul de instalare și deployment.
+
+\subsection{Compatibilitate Multi-Platformă (CUDA \& Metal)}
+Codul a fost optimizat pentru a rula pe arhitecturi hardware diverse:
+\begin{itemize}
+    \item \textbf{NVIDIA (Windows/Linux):} Utilizează CUDA pentru accelerare GPU.
+    \item \textbf{Apple Silicon (MacOS):} Am implementat suport pentru \textbf{Metal Performance Shaders (MPS)}, permițând rularea bazei de date FAISS și a generării video pe cipurile M1/M2/M3.
+\end{itemize}
+
+\subsection{Gestionarea Fișierelor Multimedia}
+\begin{itemize}
+    \item \textbf{Timestamping:} Fiecare generare primește un nume unic bazat pe data și ora execuției (ex: \texttt{response\_TIMESTAMP.mp4}), permițând istoric și acces concurent.
+    \item \textbf{Separare Audio/Video:} Sistemul generează fișiere separate pentru debug, iar sincronizarea finală se face într-un container MP4.
+    \item \textbf{High-Res Lip Sync:} Am ajustat parametrii Wav2Lip și am implementat un algoritm de super-resolution (post-procesare) pentru a îmbunătăți claritatea zonei bucale, eliminând blur-ul specific modelelor GAN vechi.
+\end{itemize}
+
+\section{Refactorizarea Codului (Code Cleaning)}
+Am realizat o restructurare completă a sistemului de fișiere:
+\begin{itemize}
+    \item Încărcarea resurselor (modele, index FAISS) se face \textbf{o singură dată} la startup-ul serverului (`@app.on\_event("startup")`), nu la fiecare cerere, reducând latența inițială de la 15s la <1s per request.
+    \item Codul a fost modularizat în funcții distincte pentru Retrieval, Generation și Animation.
+\end{itemize}
+
+% ===================================================================
+%            CONCLUZII
+% ===================================================================
 \chapter*{Concluzii}
-Proiectul „Face2Learn” oferă o abordare inovatoare de integrare a AI multimodal (text, voce, video) în domeniul educației. Combinația între LLM-uri optimizate, TTS și animație sincronizată contribuie la îmbunătățirea experienței de învățare, făcând-o mai naturală, mai interactivă și mai accesibilă.
+Proiectul „Face2Learn” oferă o abordare inovatoare de integrare a AI multimodal în educație. Prin combinarea LLM-urilor optimizate (Llama 3 cu QLoRA), a tehnicilor avansate de regăsire (Hybrid RAG + Reranking bazat pe Cosine Similarity) și a sintezei video (Wav2Lip High-Res), am creat un sistem capabil să ofere explicații didactice clare, naturale și accesibile.
+
+Arhitectura finală Full-Stack, compusă dintr-un backend robust (FastAPI, CUDA/Metal) și un frontend modern (React, Vite), asigură performanță, scalabilitate și o experiență de utilizare superioară, demonstrând potențialul real al asistenților virtuali în modernizarea procesului de învățare.
 
 \end{document}
