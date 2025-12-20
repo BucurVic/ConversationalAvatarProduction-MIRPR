@@ -108,7 +108,6 @@ def load_resources():
         llm = Llama(
             model_path=LLM_MODEL_PATH,
             n_gpu_layers=-1,      # Totul pe GPU (Unified Memory)
-            n_batch=1024,         # Batch mare pentru procesare rapidă a promptului
             n_ctx=4096,           # Context window
             verbose=False,        # Oprim spam-ul din consolă
             flash_attn=True       # <--- CRITIC: Viteză x2 pe Mac M-series
@@ -163,7 +162,6 @@ def generate_expanded_queries(original_query, llm_instance):
     """
     Generează variații folosind un exemplu NEUTRU pentru a evita contaminarea semantică.
     """
-    # Folosim un exemplu despre "Fotosinteză" ca să nu influențăm întrebările de matematică
     prompt = f"""<|begin_of_text|><|start_header_id|>system<|end_header_id|>
     Ești un motor de căutare semantică.
     Sarcina ta: Reformulează întrebarea utilizatorului în 2 moduri alternative (sinonime, cuvinte cheie).
