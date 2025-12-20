@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import "../chat.css"
 import { postChat } from "../api/chatApi"
 
@@ -9,13 +9,78 @@ type Message = {
   sources?: string[]
 }
 
+// --- COMPONENTĂ PENTRU EFECTUL DE TYPEWRITER ---
+function AiMessage({ text, mediaUrl, sources }: { text: string, mediaUrl?: string, sources?: string[] }) {
+  const [displayedText, setDisplayedText] = useState("")
+  const [isTyping, setIsTyping] = useState(true)
+
+  useEffect(() => {
+    let index = 0
+    // Viteza de scriere (mai mic = mai rapid)
+    const speed = 20 
+
+    const interval = setInterval(() => {
+      if (index < text.length) {
+        // Adăugăm câte un caracter sau bucăți mici pentru fluiditate
+        setDisplayedText((prev) => prev + text.charAt(index))
+        index++
+      } else {
+        clearInterval(interval)
+        setIsTyping(false)
+      }
+    }, speed)
+
+    return () => clearInterval(interval)
+  }, [text])
+
+  return (
+    <div className="bubble ai">
+      {/* Textul generat */}
+      <p>{displayedText}</p>
+
+      {/* Video și Surse apar DOAR după ce textul s-a terminat de scris */}
+      {!isTyping && (
+        <div className="fade-in-content">
+          {mediaUrl && (
+            <div className="video-container">
+              <video src={mediaUrl} autoPlay controls />
+            </div>
+          )}
+
+          {sources && sources.length > 0 && (
+            <div className="sources">
+              <strong>📚 Surse utilizate:</strong>
+              <ul>
+                {sources.map((s, idx) => (
+                  <li key={idx}>{s}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+// --------------------------------------------------
+
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState("")
   const [loading, setLoading] = useState(false)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  // Auto-scroll la ultimul mesaj
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages, loading])
 
   async function handleSend(text: string) {
+    if (!text.trim()) return
+    
+    // Adaugă mesaj user
     setMessages((prev) => [...prev, { role: "user", text }])
+    setInput("")
     setLoading(true)
 
     try {
@@ -35,7 +100,7 @@ export default function Home() {
         ...prev,
         {
           role: "assistant",
-          text: "A apărut o eroare la server. Încearcă din nou.",
+          text: "Îmi pare rău, a apărut o eroare de conexiune. Te rog să încerci din nou.",
         },
       ])
     } finally {
@@ -43,58 +108,68 @@ export default function Home() {
     }
   }
 
-  function send() {
-    if (!input.trim()) return
-    handleSend(input)
-    setInput("")
-  }
-
   return (
     <div className="page">
       <div className="app">
-        <div className="header">💬 Face2Learn</div>
+        <div className="header">
+           ✨ Face2Learn AI
+        </div>
 
         <div className="messages">
-          {messages.map((m, i) => (
-           <div
-            key={i}
-            className={`bubble ${m.role === "user" ? "user" : "ai"}`}
-            >
-            <p>{m.text}</p>
-
-            {m.mediaUrl && <video src={m.mediaUrl} controls />}
-
-            {m.role === "assistant" && m.sources && m.sources.length > 0 && (
-                <div className="sources">
-                📚 Surse:
-                <ul>
-                    {m.sources.map((s, idx) => (
-                    <li key={idx}>{s}</li>
-                    ))}
-                </ul>
-                </div>
-            )}
+          {/* WELCOME SCREEN DACĂ NU SUNT MESAJE */}
+          {messages.length === 0 && (
+            <div className="welcome-screen">
+              <div className="welcome-icon">🎓</div>
+              <div className="welcome-text">
+                <h2>Salut! Sunt asistentul tău digital.</h2>
+                <p>Întreabă-mă orice despre cursurile tale, iar eu îți voi răspunde text și video.</p>
+              </div>
             </div>
+          )}
 
+          {messages.map((m, i) => (
+            m.role === "user" ? (
+              // MESAJ USER (Simplu)
+              <div key={i} className="bubble user">
+                <p>{m.text}</p>
+              </div>
+            ) : (
+              // MESAJ AI (Cu efect Typewriter)
+              <AiMessage 
+                key={i} 
+                text={m.text} 
+                mediaUrl={m.mediaUrl} 
+                sources={m.sources} 
+              />
+            )
           ))}
 
+          {/* INDICATOR DE ÎNCĂRCARE (Cât timp serverul procesează) */}
           {loading && (
-            <div className="bubble ai">Asistentul scrie…</div>
+            <div className="bubble ai">
+              <div className="typing-indicator">
+                <div className="dot"></div>
+                <div className="dot"></div>
+                <div className="dot"></div>
+              </div>
+            </div>
           )}
+          
+          <div ref={messagesEndRef} />
         </div>
 
         <div className="input-bar">
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder={loading ? "Asistentul răspunde…" : "Scrie întrebarea ta…"}
+            placeholder={loading ? "Procesez răspunsul..." : "Scrie întrebarea ta aici..."}
             disabled={loading}
-            onKeyDown={(e) => e.key === "Enter" && !loading && send()}
-            />
+            onKeyDown={(e) => e.key === "Enter" && !loading && handleSend(input)}
+          />
 
-          <button onClick={send} disabled={loading}>
-            {loading ? "…" : "Trimite"}
-            </button>
+          <button onClick={() => handleSend(input)} disabled={loading || !input.trim()}>
+            {loading ? "..." : "➤"}
+          </button>
         </div>
       </div>
     </div>

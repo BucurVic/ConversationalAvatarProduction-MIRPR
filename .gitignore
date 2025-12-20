@@ -1,18 +1,18 @@
 __pycache__/
 *.pyc
 
-Proiect/models/
-Proiect/workflow/vectorstore/
-Proiect/workflow/vectorstoretmp/
-Proiect/requirements/venv_main/
-Proiect/venv310/
-Proiect/venvWav2Lip/
-Proiect/generate_avatar/__pycache__/
-Proiect/pycache/
-Proiect/external/
-Proiect/__pycache__/
+Backend/models/
+Backend/workflow/vectorstore/
+Backend/workflow/vectorstoretmp/
+Backend/requirements/venv_main/
+Backend/venv310/
+Backend/venvWav2Lip/
+Backend/generate_avatar/__pycache__/
+Backend/pycache/
+Backend/external/
+Backend/__pycache__/
 .DS_Store
-Proiect/workflow/runtime/
-Proiect/.idea/
+Backend/workflow/runtime/
+Backend/.idea/
 .idea/
 
