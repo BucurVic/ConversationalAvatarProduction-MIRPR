@@ -1,7 +1,18 @@
 import os
 import sys
+
+# --- FIX CRITIC PENTRU CRASH/SEGFAULT PE MAC/LINUX ---
+# Acestea trebuie să fie primele linii!
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:128"
+
 import time
 import warnings
+import gc
+import psutil
 from datetime import datetime
 from pathlib import Path
 from contextlib import asynccontextmanager
@@ -9,9 +20,6 @@ from contextlib import asynccontextmanager
 warnings.filterwarnings("ignore", category=UserWarning)
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
-
-os.environ["TOKENIZERS_PARALLELISM"] = "false"
-os.environ["OBJC_DISABLE_INITIALIZE_FORK_SAFETY"] = "YES"
 
 # --- SETUP IMPORTURI DIN RĂDĂCINĂ ---
 project_root = Path(__file__).resolve().parent.parent
@@ -48,12 +56,38 @@ try:
     from generate_avatar.generate_tts import tts_piper
     from generate_avatar.generate_lip_sync_wav2lip import wav2lip_generate_video
     
-    # Asigurăm folderul de output
     Path(VIDEO_OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
     
 except ImportError as e:
     print(f"[EROARE FATALĂ] Nu pot importa modulele proiectului: {e}")
     sys.exit(1)
+
+# --- UTILS MEMORIE (ACTUALIZAT CU MPS/CUDA) ---
+def log_memory(stage="Status"):
+    """
+    Funcție de monitorizare detaliată (RAM + VRAM).
+    """
+    process = psutil.Process(os.getpid())
+    ram_usage_gb = process.memory_info().rss / (1024 ** 3) # Conversie în GB
+    
+    vram_usage_gb = 0.0
+    device_name = "CPU"
+    
+    if torch.cuda.is_available():
+        vram_usage_gb = torch.cuda.memory_allocated() / (1024 ** 3)
+        device_name = "NVIDIA GPU"
+    elif torch.backends.mps.is_available():
+        try:
+            vram_usage_gb = torch.mps.current_allocated_memory() / (1024 ** 3)
+            device_name = "Apple MPS"
+        except:
+            device_name = "Apple MPS (No stats)"
+
+    print(f"\n📊 [{stage}]")
+    print(f"   RAM Proces (System): {ram_usage_gb:.2f} GB")
+    if device_name != "CPU":
+        print(f"   VRAM ({device_name}): {vram_usage_gb:.2f} GB")
+    print("-" * 30)
 
 # --- DEFINIȚII CLASE ---
 class ChatRequest(BaseModel):
@@ -70,16 +104,22 @@ def get_device_type():
     if torch.cuda.is_available():
         return "cuda"
     elif torch.backends.mps.is_available():
-        return "mps" # Apple Silicon
+        return "mps"
     else:
         return "cpu"
 
 # ----------------------------------------------------------
-#            1. RESURSE (Optimizat M4)
+#            1. RESURSE (OPTIMIZARE INFRASTRUCTURĂ)
 # ----------------------------------------------------------
 def load_resources():
-    print(f"\n[BOOT] Se încarcă resursele pe {get_device_type().upper()}...")
+    print(f"\n[BOOT] Se încarcă resursele (Optimizat)...")
+    log_memory("Start Boot")
+    
     device = get_device_type()
+    
+    # OPTIMIZARE 1: Modelele auxiliare pe CPU.
+    aux_device = "cpu" 
+    print(f"[BOOT] Modele auxiliare (Embed/Rerank) vor rula pe: {aux_device}")
 
     try:
         # 1. Index FAISS
@@ -95,25 +135,36 @@ def load_resources():
         
         # 2. Modele Embeddings & Reranker
         print(f"[BOOT] Embedding Model: {EMBEDDING_MODEL_NAME}")
-        embed_model = SentenceTransformer(EMBEDDING_MODEL_NAME, device=device)
+        embed_model = SentenceTransformer(EMBEDDING_MODEL_NAME, device=aux_device)
 
         print(f"[BOOT] Reranker Model: {RERANKER_MODEL_NAME}")
-        reranker_model = CrossEncoder(RERANKER_MODEL_NAME, device=device)
+        reranker_model = CrossEncoder(RERANKER_MODEL_NAME, device=aux_device)
 
-        # 3. LLM (Llama 3) - Optimizare Flash Attention
+        # 3. LLM (Llama 3)
         print(f"[BOOT] LLM Llama 3: {Path(LLM_MODEL_PATH).name}")
-        if not Path(LLM_MODEL_PATH).exists():
-            raise FileNotFoundError(f"Model GGUF lipsă: {LLM_MODEL_PATH}")
+        
+        n_gpu = -1 
+        if device == "cpu": n_gpu = 0
+        
+        use_flash_attn = True if device == "mps" else False 
 
+        # OPTIMIZARE 2: Parametri tehnici pentru Llama
         llm = Llama(
             model_path=LLM_MODEL_PATH,
-            n_gpu_layers=-1,      # Totul pe GPU (Unified Memory)
-            n_ctx=4096,           # Context window
-            verbose=False,        # Oprim spam-ul din consolă
-            flash_attn=True       # <--- CRITIC: Viteză x2 pe Mac M-series
+            n_gpu_layers=n_gpu,     
+            n_ctx=2048,           # OPTIMIZARE: 2048 vs 4096
+            n_batch=256,          # OPTIMIZARE: Batch mic
+            verbose=False,       
+            flash_attn=use_flash_attn 
         )
         
-        print("[BOOT] Sistem pregătit! Toate resursele încărcate.")
+        log_memory("Resurse Încărcate")
+        
+        # Curățare inițială
+        gc.collect()
+        if torch.cuda.is_available(): torch.cuda.empty_cache()
+        if torch.backends.mps.is_available(): torch.mps.empty_cache()
+
         return {
             "index": index,
             "texts": texts,
@@ -122,45 +173,29 @@ def load_resources():
             "llm": llm
         }
     except Exception as e:
-        print(f"[EROARE CRITICĂ] {e}")
+        print(f"[EROARE CRITICĂ LA ÎNCĂRCARE] {e}")
         return None
 
-# --- LIFESPAN MANAGER (Înlocuiește @app.on_event) ---
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
     global resources
     res = load_resources()
-    if res:
-        resources = res
-    else:
-        print("[CRITICAL] Resursele nu s-au încărcat!")
-    
-    yield # App runs here
-    
-    # Shutdown
+    if res: resources = res
+    yield 
     resources.clear()
+    gc.collect()
     print("[SHUTDOWN] Resurse eliberate.")
 
-# --- INIȚIALIZARE APP FASTAPI ---
 app = FastAPI(title="Face2Learn API", description="Backend RAG + Avatar Video", lifespan=lifespan)
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"], 
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 app.mount("/videos", StaticFiles(directory=str(VIDEO_OUTPUT_DIR)), name="videos")
 
 # ----------------------------------------------------------
-#            2. RAG LOGIC
+#            2. RAG LOGIC (CALITATE MAXIMĂ PĂSTRATĂ)
 # ----------------------------------------------------------
 def generate_expanded_queries(original_query, llm_instance):
     """
-    Generează variații folosind un exemplu NEUTRU pentru a evita contaminarea semantică.
+    Generează variații folosind un exemplu NEUTRU.
     """
     prompt = f"""<|begin_of_text|><|start_header_id|>system<|end_header_id|>
     Ești un motor de căutare semantică.
@@ -192,7 +227,6 @@ def generate_expanded_queries(original_query, llm_instance):
         
         queries = []
         for q in text.split('\n'):
-            # Curățare regex (scoate 1., -, *)
             clean_q = re.sub(r'^[\d\.\-\*\s]+', '', q).strip()
             if clean_q and len(clean_q) > 3:
                 queries.append(clean_q)
@@ -216,13 +250,12 @@ def search_with_rerank(original_query, expanded_queries, index, texts, embed_mod
     
     if not candidate_indices: return []
 
-    # Limităm candidații pentru rerank (viteză)
     candidate_indices = list(candidate_indices)[:15]
 
     candidate_docs_text = [texts[i] for i in candidate_indices]
     pairs = [[original_query, doc_text] for doc_text in candidate_docs_text]
     
-    # 2. Rerank (Heavy computation)
+    # 2. Rerank
     scores = reranker_model.predict(pairs)
     ranked_results = sorted(zip(candidate_docs_text, scores), key=lambda x: x[1], reverse=True)
     
@@ -237,11 +270,10 @@ def search_with_rerank(original_query, expanded_queries, index, texts, embed_mod
 
 def get_llm_response(context_docs, query, llm_instance):
     """
-    Generează un răspuns fluid și natural (fără titluri), combinând definiția cu explicația.
+    Prompt complet pentru personalitate.
     """
     context = "\n\n".join([doc.page_content for doc in context_docs])
     
-    # Prompt One-Shot pentru stil NATURAL și FLUID
     prompt = f"""<|begin_of_text|><|start_header_id|>system<|end_header_id|>
     Ești un Asistent Universitar AI prietenos.
 
@@ -278,17 +310,22 @@ def get_llm_response(context_docs, query, llm_instance):
         return None
 
 # ----------------------------------------------------------
-#            3. VIDEO GENERATION
+#            3. VIDEO GENERATION (OPTIMIZARE MEMORIE)
 # ----------------------------------------------------------
 def generate_video_response(text_response):
     if not text_response: return None
 
-    tts_text = text_response
+    # OPTIMIZARE 3: Curățăm memoria ÎNAINTE de video
+    gc.collect()
+    if torch.cuda.is_available(): torch.cuda.empty_cache()
+    if torch.backends.mps.is_available(): torch.mps.empty_cache()
+    
+    log_memory("Înainte de Wav2Lip")
 
-    tts_text = tts_text.replace("*", "").replace("#", "").replace("\n", " ").strip()
+    tts_text = text_response.replace("*", "").replace("#", "").replace("\n", " ").strip()
     
     if len(tts_text) > 400: 
-        tts_text = tts_text[:400].rsplit('.', 1)[0] + "." # Tăiem la ultimul punct
+        tts_text = tts_text[:400].rsplit('.', 1)[0] + "." 
 
     current_time_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     audio_filename = f"audio_{current_time_str}.wav"
@@ -298,14 +335,9 @@ def generate_video_response(text_response):
     audio_path = runtime_dir / audio_filename
     final_video_path = Path(VIDEO_OUTPUT_DIR) / video_filename
 
-    print(f"[VIDEO] Generare TTS ({audio_filename})...")
     try:
         tts_piper(tts_text, str(audio_path))
-    except Exception:
-        return None
-
-    print(f"[VIDEO] Generare Wav2Lip ({video_filename})...")
-    try:
+        
         wav2lip_generate_video(
             image_path=USER_IMAGE,
             audio_path=str(audio_path),
@@ -313,6 +345,11 @@ def generate_video_response(text_response):
             wav2lip_repo=WAV2LIP_REPO
         )
         
+        # OPTIMIZARE 4: Curățăm memoria DUPĂ video
+        gc.collect()
+        if torch.cuda.is_available(): torch.cuda.empty_cache()
+        if torch.backends.mps.is_available(): torch.mps.empty_cache()
+
         default_output = Path(VIDEO_OUTPUT_DIR) / "avatar_lipsync.mp4"
         if default_output.exists():
             shutil.move(str(default_output), str(final_video_path))
@@ -334,9 +371,12 @@ async def chat_endpoint(request: ChatRequest):
     query = request.message
     print(f"\n[USER] {query}")
     
+    # OPTIMIZARE 5: Curățare preventivă
+    gc.collect()
+    
     t0 = time.time()
     
-    # 1. Search (Timed)
+    # 1. Search 
     t_s = time.time()
     expanded = generate_expanded_queries(unidecode(query), resources['llm'])
     docs = search_with_rerank(
@@ -354,13 +394,14 @@ async def chat_endpoint(request: ChatRequest):
     video_url = None
     llm_time = 0.0
 
-    # 2. Gen Text
+    # 2. Gen Text (Prompt FULL)
     if docs:
         sources = list(set([d.metadata['source'] for d in docs]))
         t_l = time.time()
         print("[API] Generare text Llama 3...")
         response_text = get_llm_response(docs, query, resources['llm'])
         llm_time = time.time() - t_l
+        log_memory("După LLM (Gen Text)")
     
     # 3. Gen Video
     video_time = 0.0
@@ -371,6 +412,7 @@ async def chat_endpoint(request: ChatRequest):
         video_time = time.time() - t_v
         if vid_name:
             video_url = f"http://localhost:8000/videos/{vid_name}"
+        log_memory("După Video (Final)")
 
     total = time.time() - t0
     

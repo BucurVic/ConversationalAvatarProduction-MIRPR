@@ -14,7 +14,8 @@ RERANKER_MODEL_NAME = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 
 # Calea către modelul Llama GGUF
 # Se presupune că e în: Proiect/models/Meta-Llama...
-LLM_MODEL_PATH = str(BASE_DIR / "models" / "Meta-Llama-3-8B-Instruct.Q4_K_M.gguf")
+# LLM_MODEL_PATH = str(BASE_DIR / "models" / "Meta-Llama-3-8B-Instruct.Q4_K_M.gguf")
+LLM_MODEL_PATH = str(BASE_DIR / "models" / "llama-3-8b-instruct.Q4_K_M.gguf")
 
 # --- AVATAR & VIDEO ---
 # Repo-ul Wav2Lip (clonat în external)

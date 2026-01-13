@@ -108,6 +108,7 @@ pooch==1.8.2
 proglog==0.1.12
 propcache==0.4.1
 protobuf==4.25.8
+psutil
 pycparser==2.23
 pydantic==2.12.4
 pydantic-settings==2.12.0
