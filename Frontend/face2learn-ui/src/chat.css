@@ -262,3 +262,35 @@ body, html {
 ::-webkit-scrollbar-thumb:hover {
   background: #475569;
 }
+
+/* --- MODEL SELECT DROPDOWN --- */
+.model-select {
+  padding: 0 16px;
+  height: 54px; /* Aceeași înălțime vizuală cu input-ul */
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(30, 41, 59, 0.6); /* Același fundal ca input-ul */
+  backdrop-filter: blur(5px);
+  color: white;
+  font-size: 0.9rem;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  
+  /* Asigură-te că nu se micșorează prea mult pe ecrane mici */
+  min-width: 100px; 
+}
+
+.model-select:focus {
+  border-color: #6366f1;
+  background: rgba(30, 41, 59, 0.9);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+}
+
+/* Stilizează meniul dropdown când este deschis */
+.model-select option {
+  background-color: #020617; /* Fundal întunecat pentru opțiuni */
+  color: white;
+  padding: 10px;
+}
