@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react"
 import "../chat.css"
-import { postChat } from "../api/chatApi"
+import { postChat, getVideoModel, setVideoModel, type VideoModelType } from "../api/chatApi"
 
 type Message = {
   role: "user" | "assistant"
@@ -69,11 +69,28 @@ export default function Home() {
   const [input, setInput] = useState("")
   const [loading, setLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const [selectedModel, setSelectedModel] = useState<VideoModelType>("wav2lip")
+
+  useEffect(() => {
+    getVideoModel()
+      .then((data) => setSelectedModel(data.current_model))
+      .catch((err) => console.error("Eroare la preluarea modelului:", err))
+  }, [])
 
   // Auto-scroll la ultimul mesaj
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages, loading])
+
+  const handleModelChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newModel = e.target.value as VideoModelType
+    setSelectedModel(newModel)
+    try {
+      await setVideoModel(newModel)
+    } catch (error) {
+      console.error("Nu s-a putut schimba modelul:", error)
+    }
+  }
 
   async function handleSend(text: string) {
     if (!text.trim()) return
@@ -166,6 +183,16 @@ export default function Home() {
             disabled={loading}
             onKeyDown={(e) => e.key === "Enter" && !loading && handleSend(input)}
           />
+
+          <select 
+            className="model-select"
+            value={selectedModel}
+            onChange={handleModelChange}
+            disabled={loading}
+          >
+            <option value="sadtalker">SadTalker</option>
+            <option value="wav2lip">Wav2Lip</option>
+          </select>
 
           <button onClick={() => handleSend(input)} disabled={loading || !input.trim()}>
             {loading ? "..." : "➤"}

@@ -20,6 +20,7 @@ LLM_MODEL_PATH = str(BASE_DIR / "models" / "llama-3-8b-instruct.Q4_K_M.gguf")
 # --- AVATAR & VIDEO ---
 # Repo-ul Wav2Lip (clonat în external)
 WAV2LIP_REPO = str(BASE_DIR / "external" / "Wav2Lip")
+SADTALKER_REPO = str(BASE_DIR / "external" / "SadTalker")
 
 # Imaginea de bază pentru avatar
 USER_IMAGE = str(BASE_DIR / "generate_avatar" / "input_img.png")

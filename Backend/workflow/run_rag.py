@@ -51,16 +51,20 @@ try:
         LLM_MODEL_PATH,
         USER_IMAGE,
         WAV2LIP_REPO,
+        SADTALKER_REPO,
         VIDEO_OUTPUT_DIR
     )
     from generate_avatar.generate_tts import tts_piper
     from generate_avatar.generate_lip_sync_wav2lip import wav2lip_generate_video
+    from generate_avatar.generate_lip_sync_sadtalker import sadtalker_generate_video
     
     Path(VIDEO_OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
     
 except ImportError as e:
     print(f"[EROARE FATALĂ] Nu pot importa modulele proiectului: {e}")
     sys.exit(1)
+
+CURRENT_VIDEO_MODEL = "wav2lip"
 
 # --- UTILS MEMORIE (ACTUALIZAT CU MPS/CUDA) ---
 def log_memory(stage="Status"):
@@ -312,54 +316,146 @@ def get_llm_response(context_docs, query, llm_instance):
 # ----------------------------------------------------------
 #            3. VIDEO GENERATION (OPTIMIZARE MEMORIE)
 # ----------------------------------------------------------
+# ----------------------------------------------------------
+#            HELPER: MUTARE SIGURĂ (WINDOWS ROBUSTNESS)
+# ----------------------------------------------------------
+def safe_move_video(source_path: str, dest_path: str, retries=3):
+    """
+    Încearcă să mute un fișier video cu mecanism de retry și fallback copy+delete.
+    Rezolvă problema 'PermissionError' pe Windows când fișierul e încă folosit.
+    """
+    src = Path(source_path).resolve()
+    dst = Path(dest_path).resolve()
+
+    # 1. Verificăm dacă sursa există
+    if not src.exists():
+        print(f"[MOVE ERR] Sursa nu există: {src}")
+        return False
+
+    # 2. Dacă sursa e deja la destinație, nu facem nimic
+    if src == dst:
+        print("[MOVE INFO] Sursa este deja la destinație.")
+        return True
+
+    # 3. Ștergem destinația dacă există deja (overwrite)
+    if dst.exists():
+        try:
+            os.remove(dst)
+        except Exception as e:
+            print(f"[MOVE WARN] Nu am putut șterge fișierul vechi de la destinație: {e}")
+
+    # 4. Bucla de încercări
+    for attempt in range(retries):
+        try:
+            # Încercare mutare atomică
+            shutil.move(str(src), str(dst))
+            print(f"[MOVE SUCCESS] Fișier mutat la: {dst}")
+            return True
+        except Exception as e:
+            print(f"[MOVE RETRY] Încercarea {attempt + 1}/{retries} eșuată ({e}). Aștept...")
+            time.sleep(1.0) # Așteptăm 1 secundă eliberarea fișierului
+            
+            # Fallback: Copy + Delete (mai robust pe Windows)
+            try:
+                shutil.copy2(str(src), str(dst))
+                try: os.remove(src) # Curățăm originalul
+                except: pass
+                print(f"[MOVE SUCCESS] Fișier copiat (fallback) la: {dst}")
+                return True
+            except Exception as copy_err:
+                print(f"[MOVE ERR] Copy fallback eșuat: {copy_err}")
+
+    return False
+
+# ----------------------------------------------------------
+#            3. VIDEO GENERATION (LOGICA HIBRIDĂ)
+# ----------------------------------------------------------
 def generate_video_response(text_response):
     if not text_response: return None
 
-    # OPTIMIZARE 3: Curățăm memoria ÎNAINTE de video
+    # Curățare memorie PRE-generare
     gc.collect()
     if torch.cuda.is_available(): torch.cuda.empty_cache()
     if torch.backends.mps.is_available(): torch.mps.empty_cache()
     
-    log_memory("Înainte de Wav2Lip")
+    # Logging Model
+    print(f"[VIDEO] Generare folosind motorul: {CURRENT_VIDEO_MODEL.upper()}")
+    log_memory(f"Start Video ({CURRENT_VIDEO_MODEL})")
 
+    # Procesare text TTS
     tts_text = text_response.replace("*", "").replace("#", "").replace("\n", " ").strip()
-    
     if len(tts_text) > 400: 
         tts_text = tts_text[:400].rsplit('.', 1)[0] + "." 
 
+    # Pregătire nume fișiere și căi
     current_time_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     audio_filename = f"audio_{current_time_str}.wav"
     video_filename = f"response_{current_time_str}.mp4"
     
     runtime_dir = Path(VIDEO_OUTPUT_DIR).parent
     audio_path = runtime_dir / audio_filename
+    
+    # ACEASTA este destinația finală unde API-ul se așteaptă să găsească fișierul
     final_video_path = Path(VIDEO_OUTPUT_DIR) / video_filename
 
     try:
+        # 1. Generare Audio (Comun)
         tts_piper(tts_text, str(audio_path))
         
-        wav2lip_generate_video(
-            image_path=USER_IMAGE,
-            audio_path=str(audio_path),
-            output_dir=str(Path(VIDEO_OUTPUT_DIR)),
-            wav2lip_repo=WAV2LIP_REPO
-        )
-        
-        # OPTIMIZARE 4: Curățăm memoria DUPĂ video
+        generated_path = None
+
+        # 2. RULARE MOTOR VIDEO
+        if CURRENT_VIDEO_MODEL == "sadtalker":
+            # SadTalker returnează o cale absolută dintr-un folder temporar
+            generated_path = sadtalker_generate_video(
+                image_path=USER_IMAGE,
+                audio_path=str(audio_path),
+                output_dir=str(Path(VIDEO_OUTPUT_DIR)), # SadTalker poate crea subfoldere aici
+                sadtalker_repo=str(SADTALKER_REPO)
+            )
+            
+        elif CURRENT_VIDEO_MODEL == "wav2lip":
+            # Wav2Lip
+            generated_path = wav2lip_generate_video(
+                image_path=USER_IMAGE,
+                audio_path=str(audio_path),
+                output_dir=str(Path(VIDEO_OUTPUT_DIR)),
+                wav2lip_repo=str(WAV2LIP_REPO)
+            )
+
+        # 3. FINALIZARE ȘI MUTARE
+        # Curățare memorie POST-generare
         gc.collect()
         if torch.cuda.is_available(): torch.cuda.empty_cache()
-        if torch.backends.mps.is_available(): torch.mps.empty_cache()
 
-        default_output = Path(VIDEO_OUTPUT_DIR) / "avatar_lipsync.mp4"
-        if default_output.exists():
-            shutil.move(str(default_output), str(final_video_path))
-            return video_filename
+        if generated_path:
+            print(f"[DEBUG] Video generat brut la: {generated_path}")
+            
+            # Folosim funcția robustă pentru a duce fișierul la destinația finală 'final_video_path'
+            success = safe_move_video(generated_path, str(final_video_path))
+            
+            if success:
+                # Verificăm fizic existența înainte de a returna numele
+                if final_video_path.exists() and final_video_path.stat().st_size > 0:
+                    return video_filename
+                else:
+                    print("[VIDEO ERR] Fișierul final are 0 bytes sau lipsește.")
+                    return None
+            else:
+                print("[VIDEO ERR] Mutarea fișierului a eșuat după retries.")
+                return None
         else:
+            print(f"[VIDEO ERR] Motorul {CURRENT_VIDEO_MODEL} a returnat None.")
             return None
-    except Exception as e:
-        print(f"[VIDEO ERR] {e}")
-        return None
 
+    except Exception as e:
+        print(f"[VIDEO ERR] Excepție generală: {e}")
+        return None
+    finally:
+        # Curățenie audio (mereu)
+        if audio_path.exists():
+            try: os.remove(audio_path)
+            except: pass
 # ----------------------------------------------------------
 #            4. ENDPOINT CHAT
 # ----------------------------------------------------------
@@ -434,6 +530,36 @@ async def chat_endpoint(request: ChatRequest):
             "total": round(total, 2)
         }
     }
+
+class ModelSettings(BaseModel):
+    model_name: str  # Frontend-ul va trimite "sadtalker" sau "wav2lip"
+
+@app.post("/settings/video-model")
+async def set_video_model(settings: ModelSettings):
+    global CURRENT_VIDEO_MODEL
+    
+    # Normalizăm input-ul (litere mici, fără spații)
+    normalized_name = settings.model_name.lower().strip()
+    
+    # Validare strictă
+    if normalized_name not in ["sadtalker", "wav2lip"]:
+        raise HTTPException(status_code=400, detail="Model invalid. Alege 'sadtalker' sau 'wav2lip'.")
+    
+    # Actualizăm starea globală
+    CURRENT_VIDEO_MODEL = normalized_name
+    
+    print(f"\n[SYSTEM] Model video schimbat pe: {CURRENT_VIDEO_MODEL.upper()}")
+    
+    return {
+        "status": "success", 
+        "current_model": CURRENT_VIDEO_MODEL,
+        "message": f"Model activat: {CURRENT_VIDEO_MODEL}"
+    }
+
+# Endpoint opțional ca frontend-ul să știe ce e selectat la refresh
+@app.get("/settings/video-model")
+async def get_video_model():
+    return {"current_model": CURRENT_VIDEO_MODEL}
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
